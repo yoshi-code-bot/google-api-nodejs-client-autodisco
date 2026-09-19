@@ -3011,6 +3011,10 @@ export namespace chromemanagement_v1 {
      */
     pubSubXdrConfig?: Schema$GoogleChromeManagementVersionsV1PubSubXdrConfig;
     /**
+     * Secure gateway connector config.
+     */
+    secureGatewayConfig?: Schema$GoogleChromeManagementVersionsV1SecureGatewayConfig;
+    /**
      * Splunk connector config.
      */
     splunkConfig?: Schema$GoogleChromeManagementVersionsV1SplunkConfig;
@@ -3585,6 +3589,19 @@ export namespace chromemanagement_v1 {
      * Output only. The common name of the subject.
      */
     subjectCommonName?: string | null;
+  }
+  /**
+   * Secure gateway connector config.
+   */
+  export interface Schema$GoogleChromeManagementVersionsV1SecureGatewayConfig {
+    /**
+     * Optional. The enabled platforms for the secure gateway connector config.
+     */
+    enabledPlatforms?: string[] | null;
+    /**
+     * Required. The resource ID of the secure gateway connector config.
+     */
+    resourceId?: string | null;
   }
   /**
    * Request message for marking a certificate provisioning process as failed.
