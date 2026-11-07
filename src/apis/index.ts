@@ -271,6 +271,7 @@ import {VERSIONS as cloudshellVersions, cloudshell} from './cloudshell';
 import {VERSIONS as cloudsupportVersions, cloudsupport} from './cloudsupport';
 import {VERSIONS as cloudtasksVersions, cloudtasks} from './cloudtasks';
 import {VERSIONS as cloudtraceVersions, cloudtrace} from './cloudtrace';
+import {VERSIONS as colaboratoryVersions, colaboratory} from './colaboratory';
 import {VERSIONS as composerVersions, composer} from './composer';
 import {VERSIONS as computeVersions, compute} from './compute';
 import {VERSIONS as configVersions, config} from './config';
@@ -937,6 +938,7 @@ export const APIS: APIList = {
   cloudsupport: cloudsupportVersions,
   cloudtasks: cloudtasksVersions,
   cloudtrace: cloudtraceVersions,
+  colaboratory: colaboratoryVersions,
   composer: composerVersions,
   compute: computeVersions,
   config: configVersions,
@@ -1278,6 +1280,7 @@ export class GeneratedAPIs {
   cloudsupport = cloudsupport;
   cloudtasks = cloudtasks;
   cloudtrace = cloudtrace;
+  colaboratory = colaboratory;
   composer = composer;
   compute = compute;
   config = config;

@@ -306,6 +306,9 @@
       "path": "./src/apis/cloudtrace/tsconfig.build.json"
     },
     {
+      "path": "./src/apis/colaboratory/tsconfig.build.json"
+    },
+    {
       "path": "./src/apis/composer/tsconfig.build.json"
     },
     {
