@@ -6891,6 +6891,8 @@ export namespace compute_alpha {
     confidentialParavisorConfig?: Schema$ConfidentialParavisorConfig;
     /**
      * Defines whether the instance should have confidential compute enabled.
+     * When enabled, the technology used defaults to
+     * AMD SEV unless confidentialInstanceType is specified.
      */
     enableConfidentialCompute?: boolean | null;
   }
@@ -6898,7 +6900,13 @@ export namespace compute_alpha {
    * A set of Confidential Paravisor (SVSM) options.
    */
   export interface Schema$ConfidentialParavisorConfig {
+    /**
+     * Defines the type of TPM to use for the confidential instance.
+     */
     confidentialTpmType?: string | null;
+    /**
+     * Defines the IRQ mode to use for the confidential instance.
+     */
     sevSnpIrqMode?: string | null;
   }
   /**
@@ -22829,13 +22837,13 @@ export namespace compute_alpha {
    */
   export interface Schema$MachineImageParams {
     /**
-     * Input only. [Input Only] Specifies the list of disk device names that must be
-     * excluded from the new machine image.
+     * Input only. Specifies the list of disk device names that must be excluded from the
+     * new machine image.
      */
     excludedDisks?: string[] | null;
     /**
-     * Input only. [Input Only] Specifies the list of disk device names that must be
-     * included with the new machine image.
+     * Input only. Specifies the list of disk device names that must be included with the
+     * new machine image.
      */
     includedDisks?: string[] | null;
     /**
@@ -29839,7 +29847,8 @@ export namespace compute_alpha {
      */
     snapshotGroupName?: string | null;
     /**
-     * Indicates the type of the snapshot.
+     * Indicates the type of the snapshot. Valid values are ARCHIVE
+     * or STANDARD.
      */
     snapshotType?: string | null;
     /**
@@ -37294,7 +37303,8 @@ export namespace compute_alpha {
      */
     snapshotGroupName?: string | null;
     /**
-     * Indicates the type of the snapshot.
+     * Indicates the type of the snapshot. Valid values are ARCHIVE
+     * or STANDARD. The default is STANDARD.
      */
     snapshotType?: string | null;
     /**
@@ -40238,7 +40248,7 @@ export namespace compute_alpha {
      * Certificate Manager Certificates accepted formats are:
      *
      *    - //certificatemanager.googleapis.com/projects/{project\}/locations/{location\}/certificates/{resourceName\}.
-     *    - https://certificatemanager.googleapis.com/v1alpha1/projects/{project\}/locations/{location\}/certificates/{resourceName\}.
+     *    - https://certificatemanager.{universeDomain\}/v1alpha1/projects/{project\}/locations/{location\}/certificates/{resourceName\}.
      */
     sslCertificates?: string[] | null;
     /**
