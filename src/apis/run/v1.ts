@@ -189,6 +189,23 @@ export namespace run_v1 {
     role?: string | null;
   }
   /**
+   * BuildStatus holds the status of a build.
+   */
+  export interface Schema$BuildStatus {
+    /**
+     * The log URL for the Cloud Build execution.
+     */
+    cloudBuildLogUrl?: string | null;
+    /**
+     * The message details of the build.
+     */
+    message?: string | null;
+    /**
+     * The status of the build.
+     */
+    status?: string | null;
+  }
+  /**
    * Request message for cancelling an execution.
    */
   export interface Schema$CancelExecutionRequest {}
@@ -420,6 +437,23 @@ export namespace run_v1 {
      * Protocol for port. Must be "TCP". Defaults to "TCP".
      */
     protocol?: string | null;
+  }
+  /**
+   * ContainerStatus holds the information of container name and image digest value.
+   */
+  export interface Schema$ContainerStatus {
+    /**
+     * Output only. The build status of the container image.
+     */
+    buildStatus?: Schema$BuildStatus;
+    /**
+     * ImageDigest holds the resolved digest for the image specified and resolved during the creation of Revision. This field holds the digest value regardless of whether a tag or digest was originally specified in the Container object.
+     */
+    imageDigest?: string | null;
+    /**
+     * The name of the container, if specified.
+     */
+    name?: string | null;
   }
   /**
    * Storage volume source using the Container Storage Interface.
@@ -727,6 +761,15 @@ export namespace run_v1 {
      * Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.
      */
     title?: string | null;
+  }
+  /**
+   * Represents a volume backed by a Filestore instance.
+   */
+  export interface Schema$FilestoreVolumeSource {
+    /**
+     * Required. The resource name of the Filestore volume. Format: `projects/{project\}/locations/{location\}/volumePools/{volume_pool\}/volumes/{volume\}`
+     */
+    volume?: string | null;
   }
   /**
    * Conditions show the status of reconciliation progress on a given resource. Most resource use a top-level condition type "Ready" or "Completed" to show overall status with other conditions to checkpoint each stage of reconciliation. Note that if metadata.Generation does not equal status.ObservedGeneration, the conditions shown may not be relevant for the current spec.
@@ -2106,6 +2149,10 @@ export namespace run_v1 {
      */
     restartPolicy?: string | null;
     /**
+     * Optional. Sandbox configuration that can be launched through the `sandbox` CLI.
+     */
+    sandboxes?: Schema$SandboxConfiguration;
+    /**
      * Optional. Email address of the IAM service account associated with the Instance. The service account represents the identity of the running container, and determines what permissions the Instance has. If not provided, the Instance will use the project's default service account.
      */
     serviceAccountName?: string | null;
@@ -2837,6 +2884,10 @@ export namespace run_v1 {
      */
     runtimeClassName?: string | null;
     /**
+     * Optional. Sandbox configuration that can be launched through the `sandbox` CLI.
+     */
+    sandboxes?: Schema$SandboxConfiguration;
+    /**
      * Email address of the IAM service account associated with the revision of the service. The service account represents the identity of the running revision, and determines what permissions the revision has. If not provided, the revision will use the project's default service account.
      */
     serviceAccountName?: string | null;
@@ -2854,6 +2905,10 @@ export namespace run_v1 {
      * Conditions communicate information about ongoing/complete reconciliation processes that bring the "spec" inline with the observed state of the world. As a Revision is being prepared, it will incrementally update conditions. Revision-specific conditions include: * `ResourcesAvailable`: `True` when underlying resources have been provisioned. * `ContainerHealthy`: `True` when the Revision readiness check completes. * `Active`: `True` when the Revision may receive traffic.
      */
     conditions?: Schema$GoogleCloudRunV1Condition[];
+    /**
+     * Output only. Status information for each of the specified containers. The status includes the resolved digest for specified images.
+     */
+    containerStatuses?: Schema$ContainerStatus[];
     /**
      * Output only. The configured number of instances running this revision. For Cloud Run, this only includes instances provisioned using the minScale annotation. It does not include instances created by autoscaling.
      */
@@ -2955,6 +3010,48 @@ export namespace run_v1 {
      * Optional. Overrides existing job configuration for one specific new job execution only, using the specified values to update the job configuration for the new execution.
      */
     overrides?: Schema$Overrides;
+  }
+  /**
+   * Configuration for sandboxes.
+   */
+  export interface Schema$SandboxConfiguration {
+    /**
+     * Required. Sandbox templates that can be launched through the `sandbox` CLI.
+     */
+    templates?: Schema$SandboxTemplate[];
+  }
+  /**
+   * Template for a single sandbox.
+   */
+  export interface Schema$SandboxTemplate {
+    /**
+     * Optional. Arguments to the entrypoint. The docker image's CMD is used if this is not provided.
+     */
+    args?: string[] | null;
+    /**
+     * Optional. Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided.
+     */
+    command?: string[] | null;
+    /**
+     * Optional. List of environment variables to set in the sandbox.
+     */
+    env?: Schema$EnvVar[];
+    /**
+     * Required. Name of the container image in Dockerhub or Artifact Registry. If the host is not provided, Dockerhub is assumed.
+     */
+    image?: string | null;
+    /**
+     * Required. Name of the sandbox specified as a DNS_LABEL (RFC 1123).
+     */
+    name?: string | null;
+    /**
+     * Optional. Volume to mount into the container's filesystem.
+     */
+    volumeMounts?: Schema$VolumeMount[];
+    /**
+     * Optional. Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image.
+     */
+    workingDir?: string | null;
   }
   /**
    * Not supported by Cloud Run. SecretEnvSource selects a Secret to populate the environment variables with. The contents of the target Secret's Data field will represent the key-value pairs as environment variables.
@@ -3260,6 +3357,10 @@ export namespace run_v1 {
      */
     nodeSelector?: {[key: string]: string} | null;
     /**
+     * Optional. Sandbox configuration that can be launched through the `sandbox` CLI.
+     */
+    sandboxes?: Schema$SandboxConfiguration;
+    /**
      * Optional. Email address of the IAM service account associated with the task of a job execution. The service account represents the identity of the running task, and determines what permissions the task has. If not provided, the task will use the project's default service account.
      */
     serviceAccountName?: string | null;
@@ -3394,6 +3495,10 @@ export namespace run_v1 {
      * Ephemeral storage used as a shared volume.
      */
     emptyDir?: Schema$EmptyDirVolumeSource;
+    /**
+     * Represents a volume backed by a Filestore instance.
+     */
+    filestore?: Schema$FilestoreVolumeSource;
     /**
      * Volume's name. In Cloud Run Fully Managed, the name 'cloudsql' is reserved.
      */

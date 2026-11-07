@@ -191,10 +191,60 @@ export namespace run_v2 {
      */
     sourceLocation?: string | null;
     /**
-     * Optional. Name of the Cloud Build Custom Worker Pool that should be used to build the Cloud Run function. The format of this field is `projects/{project\}/locations/{region\}/workerPools/{workerPool\}` where `{project\}` and `{region\}` are the project id and region respectively where the worker pool is defined and `{workerPool\}` is the short name of the worker pool.
+     * Optional. Name of the Cloud Build private pool that should be used to build the Cloud Run function. The format of this field is `projects/{project\}/locations/{region\}/workerPools/{workerPool\}` where `{project\}` and `{region\}` are the project id and region respectively where the worker pool is defined and `{workerPool\}` is the short name of the worker pool.
      */
     workerPool?: string | null;
   }
+  /**
+   * Build configuration for a container.
+   */
+  export interface Schema$GoogleCloudRunV2BuildConfiguration {
+    /**
+     * Optional. Builds the source using Buildpacks.
+     */
+    buildpacksBuild?: Schema$GoogleCloudRunV2BuildConfigurationBuildpacksBuild;
+    /**
+     * Optional. Builds the source using Docker.
+     */
+    dockerBuild?: Schema$GoogleCloudRunV2BuildConfigurationDockerBuild;
+    /**
+     * Required. Artifact Registry URI to store the built image.
+     */
+    imageRepositoryUri?: string | null;
+    /**
+     * Optional. The service account to use for the build. Its resource name in the format `projects/{project\}/serviceAccounts/{email\}`.
+     */
+    serviceAccount?: string | null;
+    /**
+     * Optional. Tags to add to the build.
+     */
+    tags?: string[] | null;
+    /**
+     * Optional. Configuration for the worker.
+     */
+    workerConfiguration?: Schema$GoogleCloudRunV2WorkerConfiguration;
+  }
+  /**
+   * Buildpacks build configuration.
+   */
+  export interface Schema$GoogleCloudRunV2BuildConfigurationBuildpacksBuild {
+    /**
+     * Optional. Specify base image other than the default.
+     */
+    buildBaseImageUri?: string | null;
+    /**
+     * Optional. Cache image URI.
+     */
+    cacheImageUri?: string | null;
+    /**
+     * Optional. Environment variables for the build.
+     */
+    environmentVariables?: {[key: string]: string} | null;
+  }
+  /**
+   * Docker build configuration.
+   */
+  export interface Schema$GoogleCloudRunV2BuildConfigurationDockerBuild {}
   /**
    * Build information of the image.
    */
@@ -242,6 +292,23 @@ export namespace run_v2 {
     runtime?: string | null;
   }
   /**
+   * BuildStatus holds the status of a build.
+   */
+  export interface Schema$GoogleCloudRunV2BuildStatus {
+    /**
+     * The log URL for the Cloud Build execution.
+     */
+    cloudBuildLogUrl?: string | null;
+    /**
+     * The message details of the build.
+     */
+    message?: string | null;
+    /**
+     * The status of the build.
+     */
+    status?: string | null;
+  }
+  /**
    * Request message for deleting an Execution.
    */
   export interface Schema$GoogleCloudRunV2CancelExecutionRequest {
@@ -253,6 +320,19 @@ export namespace run_v2 {
      * Indicates that the request should be validated without actually cancelling any resources.
      */
     validateOnly?: boolean | null;
+  }
+  /**
+   * Configuration for Cloud Build worker.
+   */
+  export interface Schema$GoogleCloudRunV2CloudBuildWorkerConfiguration {
+    /**
+     * Optional. The machine type for the Cloud Build worker.
+     */
+    machineType?: string | null;
+    /**
+     * Optional. The name of the Cloud Build worker pool.
+     */
+    workerPool?: string | null;
   }
   /**
    * Represents a set of Cloud SQL instances. Each one will be available under /cloudsql/[instance]. Visit https://cloud.google.com/sql/docs/mysql/connect-run for more information on how to connect Cloud SQL and Cloud Run.
@@ -333,6 +413,10 @@ export namespace run_v2 {
      * Base image for this container. Only supported for services. If set, it indicates that the service is enrolled into automatic base image update.
      */
     baseImageUri?: string | null;
+    /**
+     * Optional. The build configuration for the container image.
+     */
+    buildConfig?: Schema$GoogleCloudRunV2BuildConfiguration;
     /**
      * Output only. The build info of the container image.
      */
@@ -432,6 +516,10 @@ export namespace run_v2 {
    * ContainerStatus holds the information of container name and image digest value.
    */
   export interface Schema$GoogleCloudRunV2ContainerStatus {
+    /**
+     * Output only. The build status of the container image.
+     */
+    buildStatus?: Schema$GoogleCloudRunV2BuildStatus;
     /**
      * ImageDigest holds the resolved digest for the image specified and resolved during the creation of Revision. This field holds the digest value regardless of whether a tag or digest was originally specified in the Container object.
      */
@@ -707,7 +795,16 @@ export namespace run_v2 {
     operationState?: string | null;
   }
   /**
-   * Represents a volume backed by a Cloud Storage bucket using Cloud Storage FUSE.
+   * Represents a volume backed by a Filestore instance.
+   */
+  export interface Schema$GoogleCloudRunV2FilestoreVolumeSource {
+    /**
+     * Required. The resource name of the Filestore volume. Format: `projects/{project\}/locations/{location\}/volumePools/{volume_pool\}/volumes/{volume\}`
+     */
+    volume?: string | null;
+  }
+  /**
+   * Represents a volume backed by a Cloud Storage bucket (mounted via Cloud Storage FUSE or as a block device disk).
    */
   export interface Schema$GoogleCloudRunV2GCSVolumeSource {
     /**
@@ -918,6 +1015,10 @@ export namespace run_v2 {
      * Optional. Restart policy for the Instance.
      */
     restartPolicy?: string | null;
+    /**
+     * Optional. Configuration for sandboxes.
+     */
+    sandboxes?: Schema$GoogleCloudRunV2SandboxConfiguration;
     /**
      * Output only. Reserved for future use.
      */
@@ -1359,6 +1460,10 @@ export namespace run_v2 {
      */
     containers?: Schema$GoogleCloudRunV2Container[];
     /**
+     * Output only. Status information for each of the specified containers. The status includes the resolved digest for specified images.
+     */
+    containerStatuses?: Schema$GoogleCloudRunV2ContainerStatus[];
+    /**
      * Output only. The creation time.
      */
     createTime?: string | null;
@@ -1434,6 +1539,10 @@ export namespace run_v2 {
      * Output only. Indicates whether the resource's reconciliation is still in progress. See comments in `Service.reconciling` for additional information on reconciliation process in Cloud Run.
      */
     reconciling?: boolean | null;
+    /**
+     * Output only. Configuration for sandboxes.
+     */
+    sandboxes?: Schema$GoogleCloudRunV2SandboxConfiguration;
     /**
      * Output only. Reserved for future use.
      */
@@ -1582,6 +1691,10 @@ export namespace run_v2 {
      */
     revision?: string | null;
     /**
+     * Optional. Configuration for sandboxes.
+     */
+    sandboxes?: Schema$GoogleCloudRunV2SandboxConfiguration;
+    /**
      * Optional. Scaling settings for this Revision.
      */
     scaling?: Schema$GoogleCloudRunV2RevisionScaling;
@@ -1630,6 +1743,48 @@ export namespace run_v2 {
      * Indicates that the request should be validated without actually deleting any resources.
      */
     validateOnly?: boolean | null;
+  }
+  /**
+   * Configuration for sandboxes.
+   */
+  export interface Schema$GoogleCloudRunV2SandboxConfiguration {
+    /**
+     * Required. Sandbox templates that can be launched through the `sandbox` CLI.
+     */
+    templates?: Schema$GoogleCloudRunV2SandboxTemplate[];
+  }
+  /**
+   * Template for a single sandbox.
+   */
+  export interface Schema$GoogleCloudRunV2SandboxTemplate {
+    /**
+     * Optional. Arguments to the entrypoint. The docker image's CMD is used if this is not provided.
+     */
+    args?: string[] | null;
+    /**
+     * Optional. Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided.
+     */
+    command?: string[] | null;
+    /**
+     * Optional. List of environment variables to set in the sandbox.
+     */
+    env?: Schema$GoogleCloudRunV2EnvVar[];
+    /**
+     * Required. Name of the container image in Dockerhub or Artifact Registry. If the host is not provided, Dockerhub is assumed.
+     */
+    image?: string | null;
+    /**
+     * Required. Name of the sandbox specified as a DNS_LABEL (RFC 1123).
+     */
+    name?: string | null;
+    /**
+     * Optional. Volume to mount into the container's filesystem.
+     */
+    volumeMounts?: Schema$GoogleCloudRunV2VolumeMount[];
+    /**
+     * Optional. Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image.
+     */
+    workingDir?: string | null;
   }
   /**
    * SecretEnvVarSource represents a source for the value of an EnvVar.
@@ -1966,7 +2121,7 @@ export namespace run_v2 {
      */
     tags?: string[] | null;
     /**
-     * Optional. Name of the Cloud Build Custom Worker Pool that should be used to build the function. The format of this field is `projects/{project\}/locations/{region\}/workerPools/{workerPool\}` where `{project\}` and `{region\}` are the project id and region respectively where the worker pool is defined and `{workerPool\}` is the short name of the worker pool.
+     * Optional. Name of the Cloud Build private pool that should be used to build the function. The format of this field is `projects/{project\}/locations/{region\}/workerPools/{workerPool\}` where `{project\}` and `{region\}` are the project id and region respectively where the worker pool is defined and `{workerPool\}` is the short name of the worker pool.
      */
     workerPool?: string | null;
   }
@@ -2088,6 +2243,10 @@ export namespace run_v2 {
      */
     retried?: number | null;
     /**
+     * Configuration for sandboxes.
+     */
+    sandboxes?: Schema$GoogleCloudRunV2SandboxConfiguration;
+    /**
      * Output only. Reserved for future use.
      */
     satisfiesPzs?: boolean | null;
@@ -2173,6 +2332,10 @@ export namespace run_v2 {
      * Optional. The node selector for the task template.
      */
     nodeSelector?: Schema$GoogleCloudRunV2NodeSelector;
+    /**
+     * Optional. Configuration for sandboxes.
+     */
+    sandboxes?: Schema$GoogleCloudRunV2SandboxConfiguration;
     /**
      * Optional. Email address of the IAM service account associated with the Task of a Job. The service account represents the identity of the running task, and determines what permissions the task has. If not provided, the task will use the project's default service account.
      */
@@ -2297,6 +2460,10 @@ export namespace run_v2 {
      */
     emptyDir?: Schema$GoogleCloudRunV2EmptyDirVolumeSource;
     /**
+     * Optional. Represents a volume backed by a Filestore instance.
+     */
+    filestore?: Schema$GoogleCloudRunV2FilestoreVolumeSource;
+    /**
      * Persistent storage backed by a Google Cloud Storage bucket.
      */
     gcs?: Schema$GoogleCloudRunV2GCSVolumeSource;
@@ -2346,6 +2513,15 @@ export namespace run_v2 {
      * Optional. Direct VPC egress settings. Currently only single network interface is supported.
      */
     networkInterfaces?: Schema$GoogleCloudRunV2NetworkInterface[];
+  }
+  /**
+   * Configuration for the worker.
+   */
+  export interface Schema$GoogleCloudRunV2WorkerConfiguration {
+    /**
+     * Optional. Cloud Build worker configuration.
+     */
+    cloudBuildWorkerConfiguration?: Schema$GoogleCloudRunV2CloudBuildWorkerConfiguration;
   }
   /**
    * WorkerPool acts as a top-level container that manages a set of configurations and revision templates which implement a pull-based workload. WorkerPool exists to provide a singular abstraction which can be access controlled, reasoned about, and which encapsulates software lifecycle decisions such as rollout policy and team resource ownership.
@@ -2520,6 +2696,10 @@ export namespace run_v2 {
      * Optional. The unique name for the revision. If this field is omitted, it will be automatically generated based on the WorkerPool name.
      */
     revision?: string | null;
+    /**
+     * Optional. Configuration for sandboxes.
+     */
+    sandboxes?: Schema$GoogleCloudRunV2SandboxConfiguration;
     /**
      * Optional. Email address of the IAM service account associated with the revision of the service. The service account represents the identity of the running revision, and determines what permissions the revision has. If not provided, the revision will use the project's default service account.
      */
@@ -4892,6 +5072,7 @@ export namespace run_v2 {
      *       //   "observedGeneration": "my_observedGeneration",
      *       //   "reconciling": false,
      *       //   "restartPolicy": "my_restartPolicy",
+     *       //   "sandboxes": {},
      *       //   "satisfiesPzs": false,
      *       //   "serviceAccount": "my_serviceAccount",
      *       //   "sshEnabled": false,
@@ -5235,6 +5416,7 @@ export namespace run_v2 {
      *   //   "observedGeneration": "my_observedGeneration",
      *   //   "reconciling": false,
      *   //   "restartPolicy": "my_restartPolicy",
+     *   //   "sandboxes": {},
      *   //   "satisfiesPzs": false,
      *   //   "serviceAccount": "my_serviceAccount",
      *   //   "sshEnabled": false,
@@ -5725,6 +5907,7 @@ export namespace run_v2 {
      *       //   "observedGeneration": "my_observedGeneration",
      *       //   "reconciling": false,
      *       //   "restartPolicy": "my_restartPolicy",
+     *       //   "sandboxes": {},
      *       //   "satisfiesPzs": false,
      *       //   "serviceAccount": "my_serviceAccount",
      *       //   "sshEnabled": false,
@@ -9106,6 +9289,7 @@ export namespace run_v2 {
      *   //   "observedGeneration": "my_observedGeneration",
      *   //   "reconciling": false,
      *   //   "retried": 0,
+     *   //   "sandboxes": {},
      *   //   "satisfiesPzs": false,
      *   //   "scheduledTime": "my_scheduledTime",
      *   //   "serviceAccount": "my_serviceAccount",
@@ -11875,6 +12059,7 @@ export namespace run_v2 {
      *   //   "client": "my_client",
      *   //   "clientVersion": "my_clientVersion",
      *   //   "conditions": [],
+     *   //   "containerStatuses": [],
      *   //   "containers": [],
      *   //   "createTime": "my_createTime",
      *   //   "creator": "my_creator",
@@ -11895,6 +12080,7 @@ export namespace run_v2 {
      *   //   "nodeSelector": {},
      *   //   "observedGeneration": "my_observedGeneration",
      *   //   "reconciling": false,
+     *   //   "sandboxes": {},
      *   //   "satisfiesPzs": false,
      *   //   "scaling": {},
      *   //   "scalingStatus": {},
@@ -14064,6 +14250,7 @@ export namespace run_v2 {
      *   //   "client": "my_client",
      *   //   "clientVersion": "my_clientVersion",
      *   //   "conditions": [],
+     *   //   "containerStatuses": [],
      *   //   "containers": [],
      *   //   "createTime": "my_createTime",
      *   //   "creator": "my_creator",
@@ -14084,6 +14271,7 @@ export namespace run_v2 {
      *   //   "nodeSelector": {},
      *   //   "observedGeneration": "my_observedGeneration",
      *   //   "reconciling": false,
+     *   //   "sandboxes": {},
      *   //   "satisfiesPzs": false,
      *   //   "scaling": {},
      *   //   "scalingStatus": {},
