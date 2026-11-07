@@ -593,6 +593,10 @@ export namespace networkmanagement_v1 {
      */
     cloudSqlInstance?: string | null;
     /**
+     * A [Datastream Private Connection](https://docs.cloud.google.com/datastream/docs/reference/rest/v1/projects.locations.privateConnections) name format: projects/{project\}/locations/{location\}/privateConnections/{privateConnection\}.
+     */
+    datastreamPrivateConnection?: string | null;
+    /**
      * A [DMS Private Connection](https://docs.cloud.google.com/database-migration/docs/reference/rest/v1/projects.locations.privateConnections) name format: projects/{project\}/locations/{location\}/privateConnections/{privateConnection\}.
      */
     dmsPrivateConnection?: string | null;
