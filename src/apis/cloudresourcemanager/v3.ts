@@ -934,6 +934,10 @@ export namespace cloudresourcemanager_v3 {
      */
     labels?: {[key: string]: string} | null;
     /**
+     * Output only. The type of Management Project. This field is only populated if `is_management_project` is `true`.
+     */
+    managementType?: string | null;
+    /**
      * Output only. The unique resource name of the project. It is an int64 generated number prefixed by "projects/". Example: `projects/415104041262`
      */
     name?: string | null;
@@ -9528,6 +9532,7 @@ export namespace cloudresourcemanager_v3 {
      *       //   "etag": "my_etag",
      *       //   "isManagementProject": false,
      *       //   "labels": {},
+     *       //   "managementType": "my_managementType",
      *       //   "name": "my_name",
      *       //   "parent": "my_parent",
      *       //   "projectId": "my_projectId",
@@ -9825,6 +9830,7 @@ export namespace cloudresourcemanager_v3 {
      *   //   "etag": "my_etag",
      *   //   "isManagementProject": false,
      *   //   "labels": {},
+     *   //   "managementType": "my_managementType",
      *   //   "name": "my_name",
      *   //   "parent": "my_parent",
      *   //   "projectId": "my_projectId",
@@ -10413,6 +10419,7 @@ export namespace cloudresourcemanager_v3 {
      *       //   "etag": "my_etag",
      *       //   "isManagementProject": false,
      *       //   "labels": {},
+     *       //   "managementType": "my_managementType",
      *       //   "name": "my_name",
      *       //   "parent": "my_parent",
      *       //   "projectId": "my_projectId",
