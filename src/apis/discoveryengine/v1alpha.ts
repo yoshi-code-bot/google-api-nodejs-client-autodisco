@@ -496,6 +496,10 @@ export namespace discoveryengine_v1alpha {
      */
     createBapConnection?: boolean | null;
     /**
+     * Optional. Customer-supplied OAuth scopes for connectors that opt into customer- managed scopes via ConnectorSource.enable_customer_managed_scopes. When non-empty on an opted-in connector, this list **replaces** the connector's built-in per-tool scopes: the OAuth authorization URL requests exactly these scopes for every operation, and the built-in scopes are never merged in. Ignored for connectors that do not opt in.
+     */
+    customerManagedScopes?: string[] | null;
+    /**
      * Output only. The connector contains the necessary parameters and is configured to support actions.
      */
     isActionConfigured?: boolean | null;
@@ -679,6 +683,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. Whether to create a BAP connection for the connector.
      */
     createBapConnection?: boolean | null;
+    /**
+     * Optional. Customer-supplied OAuth scopes for connectors that opt into customer- managed scopes via ConnectorSource.enable_customer_managed_scopes. When non-empty on an opted-in connector, this list **replaces** the connector's built-in per-tool scopes: the OAuth authorization URL requests exactly these scopes for every operation, and the built-in scopes are never merged in. Ignored for connectors that do not opt in.
+     */
+    customerManagedScopes?: string[] | null;
     /**
      * Output only. The connector contains the necessary parameters and is configured to support actions.
      */
@@ -990,6 +998,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. The custom placeholder text that appears in the text box before the user enters any text.
      */
     customPlaceholderText?: string | null;
+    /**
+     * Optional. Whether the agent is pinned by default for users who have access to it and have not explicitly unpinned it. Setting this field requires an admin.
+     */
+    defaultPinned?: boolean | null;
     /**
      * Output only. The reason why the agent deployment failed. Only set if the state is DEPLOYMENT_FAILED.
      */
@@ -2453,6 +2465,10 @@ export namespace discoveryengine_v1alpha {
      * State of the answer generation.
      */
     state?: string | null;
+    /**
+     * Output only. Maps a tool name (for example, `Internal-KB-Search` or `custom_mcp__agent__Internal-KB-Search`) to its human-readable display title (for example, `@Internal-KB Search`), populated from MCP tool `title` or `annotations.title` metadata so user-facing surfaces can display the tool title instead of the raw function declaration identifier. Empty when no tool display titles are present.
+     */
+    toolDisplayNames?: {[key: string]: string} | null;
   }
   /**
    * Customer policy enforcement results. Contains the results of the various policy checks, like the banned phrases or the Model Armor checks.
@@ -4770,7 +4786,7 @@ export namespace discoveryengine_v1alpha {
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaDataConnectorConnectorMetadata {
     /**
-     * Optional. The party that authored the connector, e.g. "Google" or a third-party provider name. Lets end users see who authored a connector (future: third-party-authored connectors).
+     * Optional. The party that authored the connector, e.g. "Google" or a third-party provider name. Lets end users see who authored a connector.
      */
     author?: string | null;
     /**
@@ -5145,7 +5161,7 @@ export namespace discoveryengine_v1alpha {
      */
     appName?: string | null;
     /**
-     * Optional. The instance name identifying the 3P app, e.g., "vaissptbots-my". This is different from the instance_uri which is the full URL of the 3P app e.g., "https://vaissptbots-my.sharepoint.com".
+     * Optional. The instance name identifying the 3P app, e.g., "-my". This is different from the instance_uri which is the full URL of the 3P app e.g., "https://-my.sharepoint.com".
      */
     instanceName?: string | null;
   }
@@ -5710,6 +5726,10 @@ export namespace discoveryengine_v1alpha {
      * Required. The name of the tool.
      */
     name?: string | null;
+    /**
+     * Optional. Indicates whether the tool is read-only and does not perform write operations.
+     */
+    readonly?: boolean | null;
   }
   /**
    * Defines embedding config, used for bring your own embeddings feature.
@@ -5790,6 +5810,10 @@ export namespace discoveryengine_v1alpha {
      */
     dataStoreIds?: string[] | null;
     /**
+     * Output only. Whether the project is allowed to set `global_feature_toggle_state` to `DELAYED`.
+     */
+    delayedGlobalFeatureToggleStateAllowed?: boolean | null;
+    /**
      * Optional. Whether to disable analytics for searches performed on this engine.
      */
     disableAnalytics?: boolean | null;
@@ -5798,9 +5822,17 @@ export namespace discoveryengine_v1alpha {
      */
     displayName?: string | null;
     /**
-     * Optional. Feature config for the engine to opt in or opt out of features. Supported keys: * `*`: all features, if it's present, all other feature state settings are ignored. * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge`
+     * Output only. The complete, server-resolved state of every known feature toggle. Unlike `features`, which stores only explicit admin overrides, this map always contains an entry for every toggle. Clients should read toggle state from this field.
+     */
+    effectiveFeatures?: {[key: string]: string} | null;
+    /**
+     * Optional. Feature config for the engine to opt in or opt out of features. Supported keys: * `*`: all features, if it's present, all other feature state settings are ignored. * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `music-generation` * `speech-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge` * `agent-marketplace` * `agent-scheduling` * `preview-agents`
      */
     features?: {[key: string]: string} | null;
+    /**
+     * Optional. Controls the global feature toggle state for the engine.
+     */
+    globalFeatureToggleState?: string | null;
     /**
      * Optional. The industry vertical that the engine registers. The restriction of the Engine industry vertical is based on DataStore: Vertical on Engine has to match vertical of the DataStore linked to the engine.
      */
@@ -6293,7 +6325,7 @@ export namespace discoveryengine_v1alpha {
      */
     givenName?: string | null;
     /**
-     * The user's primary email address. Do not use this for IAM bindings. Use ExternalIdentity.subject.
+     * The user's primary email address (populated from SCIM `emails[type=work]`). Do not use this for IAM bindings. Use ExternalIdentity.subject.
      */
     primaryEmail?: string | null;
   }
@@ -7413,7 +7445,7 @@ export namespace discoveryengine_v1alpha {
      */
     billingAccountLicenseConfig?: string | null;
     /**
-     * Output only. Indication of whether the subscription is terminated earlier than the expiration date. This is usually terminated by pipeline once the subscription gets terminated from subsv3.
+     * Output only. Indication of whether the subscription is terminated earlier than the expiration date.
      */
     earlyTerminated?: boolean | null;
     /**
@@ -8142,6 +8174,10 @@ export namespace discoveryengine_v1alpha {
      */
     customerProvidedConfig?: Schema$GoogleCloudDiscoveryengineV1alphaProjectCustomerProvidedConfig;
     /**
+     * Output only. The current experience state of the project.
+     */
+    experienceState?: string | null;
+    /**
      * Output only. Full resource name of the project, for example `projects/{project\}`. Note that when making requests, project number and project id are both acceptable, but the server will always respond in project number.
      */
     name?: string | null;
@@ -8343,6 +8379,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. The identity provider for this location. When provided, the location's AclConfig is set from it as part of provisioning.
      */
     idpConfig?: Schema$GoogleCloudDiscoveryengineV1alphaIdpConfig;
+    /**
+     * Optional. The caller states whether the provisioning is for the new or the classic Gemini Enterprise experience.
+     */
+    provisionIntent?: string | null;
     /**
      * Optional. Parameters for Agentspace.
      */
@@ -12184,7 +12224,7 @@ export namespace discoveryengine_v1alpha {
      */
     connectorAuthState?: Schema$GoogleCloudDiscoveryengineV1alphaWidgetConfigConnectorAuthState;
     /**
-     * Output only. It is the batch authorization group placeholder full resource name. This is not a real data connector (not existed in DataConnector table in spanner). It's a resource name existing only in the connector_authorization in the user table. E.g. projects/{project\}/locations/{location\}/collections/oauth_placeholder_google_workspace/dataStores/dataConnector.
+     * Output only. It is the batch authorization group placeholder full resource name. This is not a real data connector resource. E.g. projects/{project\}/locations/{location\}/collections/oauth_placeholder_google_workspace/dataStores/dataConnector.
      */
     placeholder?: string | null;
   }
@@ -12229,7 +12269,7 @@ export namespace discoveryengine_v1alpha {
      */
     id?: string | null;
     /**
-     * Output only. Whether this is a first-party (Google-owned) connector, as opposed to a third-party connector. Used by the frontend to group 1P vs 3P connectors.
+     * Output only. Whether this is a first-party (Google-owned) connector, as opposed to a third-party connector.
      */
     isFirstParty?: boolean | null;
     /**
@@ -12481,9 +12521,13 @@ export namespace discoveryengine_v1alpha {
      */
     enableVisualContentSummary?: boolean | null;
     /**
-     * Output only. Feature config for the engine to opt in or opt out of features. Supported keys: * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge`
+     * Output only. Feature config for the engine to opt in or opt out of features. Supported keys: * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `music-generation` * `speech-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge` * `agent-marketplace` * `agent-scheduling` * `preview-agents`
      */
     features?: {[key: string]: string} | null;
+    /**
+     * Output only. The resolved, server-side view of the feature toggle registry (launch stage per toggle).
+     */
+    featureToggleInfo?: Schema$GoogleCloudDiscoveryengineV1alphaWidgetConfigUiSettingsFeatureToggleInfo;
     /**
      * Describes generative answer configuration.
      */
@@ -12520,6 +12564,36 @@ export namespace discoveryengine_v1alpha {
      * Optional. Whether to show the admin-configured display name for data connectors in the widget sources UI (instead of the connector kind). Opt-in; defaults to false.
      */
     sourceAdminDisplayNameEnabled?: boolean | null;
+  }
+  /**
+   * The resolved, server-side view of the feature toggle registry containing detailed info about each feature.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaWidgetConfigUiSettingsFeatureToggleInfo {
+    /**
+     * Output only. The feature toggles known to the registry.
+     */
+    featureToggles?: Schema$GoogleCloudDiscoveryengineV1alphaWidgetConfigUiSettingsFeatureToggleInfoFeatureToggle[];
+  }
+  /**
+   * A single feature toggle with its server-provided metadata.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaWidgetConfigUiSettingsFeatureToggleInfoFeatureToggle {
+    /**
+     * Output only. Matches a key in the engine `features` map.
+     */
+    id?: string | null;
+    /**
+     * Output only. Launch stage of the feature behind a toggle.
+     */
+    launchStage?: string | null;
+    /**
+     * Output only. The informational date the toggle is scheduled to retire, after which the feature is on for every customer. This is for display purposes only. The system does not transition feature states automatically on this date. Only when the launch stage is set to RETIRED does the feature turn on for every customer. Unset if no retirement is scheduled.
+     */
+    retirementDate?: Schema$GoogleTypeDate;
+    /**
+     * Output only. Whether the engine's `feature_policies` may restrict this feature to specific users or groups. When false, EngineService.UpdateEngine rejects a policy for this feature.
+     */
+    supportsAccessPolicy?: boolean | null;
   }
   /**
    * Describes configuration for generative answer.
@@ -12688,7 +12762,7 @@ export namespace discoveryengine_v1alpha {
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaWorkspaceSettings {
     /**
-     * Whether the calling user's customer domain matches the workspace data stores under this engine.
+     * Whether the calling user's customer domain matches the workspace data stores under this engine. Unset when the check did not run or could not complete, which clients treat as unknown.
      */
     customerDomainValid?: boolean | null;
     /**
@@ -13634,7 +13708,7 @@ export namespace discoveryengine_v1alpha {
      */
     appName?: string | null;
     /**
-     * Optional. The instance name identifying the 3P app, e.g., "vaissptbots-my". This is different from the instance_uri which is the full URL of the 3P app e.g., "https://vaissptbots-my.sharepoint.com".
+     * Optional. The instance name identifying the 3P app, e.g., "-my". This is different from the instance_uri which is the full URL of the 3P app e.g., "https://-my.sharepoint.com".
      */
     instanceName?: string | null;
   }
@@ -13947,6 +14021,10 @@ export namespace discoveryengine_v1alpha {
      */
     dataStoreIds?: string[] | null;
     /**
+     * Output only. Whether the project is allowed to set `global_feature_toggle_state` to `DELAYED`.
+     */
+    delayedGlobalFeatureToggleStateAllowed?: boolean | null;
+    /**
      * Optional. Whether to disable analytics for searches performed on this engine.
      */
     disableAnalytics?: boolean | null;
@@ -13955,9 +14033,17 @@ export namespace discoveryengine_v1alpha {
      */
     displayName?: string | null;
     /**
-     * Optional. Feature config for the engine to opt in or opt out of features. Supported keys: * `*`: all features, if it's present, all other feature state settings are ignored. * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge`
+     * Output only. The complete, server-resolved state of every known feature toggle. Unlike `features`, which stores only explicit admin overrides, this map always contains an entry for every toggle. Clients should read toggle state from this field.
+     */
+    effectiveFeatures?: {[key: string]: string} | null;
+    /**
+     * Optional. Feature config for the engine to opt in or opt out of features. Supported keys: * `*`: all features, if it's present, all other feature state settings are ignored. * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `music-generation` * `speech-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge` * `agent-marketplace` * `agent-scheduling` * `preview-agents`
      */
     features?: {[key: string]: string} | null;
+    /**
+     * Optional. Controls the global feature toggle state for the engine.
+     */
+    globalFeatureToggleState?: string | null;
     /**
      * Optional. The industry vertical that the engine registers. The restriction of the Engine industry vertical is based on DataStore: Vertical on Engine has to match vertical of the DataStore linked to the engine.
      */
@@ -14561,7 +14647,7 @@ export namespace discoveryengine_v1alpha {
      */
     autoRenew?: boolean | null;
     /**
-     * Output only. Indication of whether the subscription is terminated earlier than the expiration date. This is usually terminated by pipeline once the subscription gets terminated from subsv3.
+     * Output only. Indication of whether the subscription is terminated earlier than the expiration date.
      */
     earlyTerminated?: boolean | null;
     /**
@@ -14681,6 +14767,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. Customer provided configurations.
      */
     customerProvidedConfig?: Schema$GoogleCloudDiscoveryengineV1betaProjectCustomerProvidedConfig;
+    /**
+     * Output only. The current experience state of the project.
+     */
+    experienceState?: string | null;
     /**
      * Output only. Full resource name of the project, for example `projects/{project\}`. Note that when making requests, project number and project id are both acceptable, but the server will always respond in project number.
      */
@@ -16593,7 +16683,7 @@ export namespace discoveryengine_v1alpha {
    */
   export interface Schema$GoogleCloudDiscoveryengineV1DataConnectorConnectorMetadata {
     /**
-     * Optional. The party that authored the connector, e.g. "Google" or a third-party provider name. Lets end users see who authored a connector (future: third-party-authored connectors).
+     * Optional. The party that authored the connector, e.g. "Google" or a third-party provider name. Lets end users see who authored a connector.
      */
     author?: string | null;
     /**
@@ -16956,7 +17046,7 @@ export namespace discoveryengine_v1alpha {
      */
     appName?: string | null;
     /**
-     * Optional. The instance name identifying the 3P app, e.g., "vaissptbots-my". This is different from the instance_uri which is the full URL of the 3P app e.g., "https://vaissptbots-my.sharepoint.com".
+     * Optional. The instance name identifying the 3P app, e.g., "-my". This is different from the instance_uri which is the full URL of the 3P app e.g., "https://-my.sharepoint.com".
      */
     instanceName?: string | null;
   }
@@ -17262,6 +17352,10 @@ export namespace discoveryengine_v1alpha {
      * Required. The name of the tool.
      */
     name?: string | null;
+    /**
+     * Optional. Indicates whether the tool is read-only and does not perform write operations.
+     */
+    readonly?: boolean | null;
   }
   /**
    * Metadata related to the progress of the SiteSearchEngineService.EnableAdvancedSiteSearch operation. This will be returned by the google.longrunning.Operation.metadata field.
@@ -17329,6 +17423,10 @@ export namespace discoveryengine_v1alpha {
      */
     dataStoreIds?: string[] | null;
     /**
+     * Output only. Whether the project is allowed to set `global_feature_toggle_state` to `DELAYED`.
+     */
+    delayedGlobalFeatureToggleStateAllowed?: boolean | null;
+    /**
      * Optional. Whether to disable analytics for searches performed on this engine.
      */
     disableAnalytics?: boolean | null;
@@ -17337,9 +17435,17 @@ export namespace discoveryengine_v1alpha {
      */
     displayName?: string | null;
     /**
-     * Optional. Feature config for the engine to opt in or opt out of features. Supported keys: * `*`: all features, if it's present, all other feature state settings are ignored. * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge`
+     * Output only. The complete, server-resolved state of every known feature toggle. Unlike `features`, which stores only explicit admin overrides, this map always contains an entry for every toggle. Clients should read toggle state from this field.
+     */
+    effectiveFeatures?: {[key: string]: string} | null;
+    /**
+     * Optional. Feature config for the engine to opt in or opt out of features. Supported keys: * `*`: all features, if it's present, all other feature state settings are ignored. * `agent-gallery` * `no-code-agent-builder` * `prompt-gallery` * `model-selector` * `notebook-lm` * `people-search` * `people-search-org-chart` * `bi-directional-audio` * `speech-to-text` * `feedback` * `session-sharing` * `personalization-memory` * `personalization-suggested-highlights` * `mobile-app-access` * `disable-agent-sharing` * `disable-image-generation` * `disable-video-generation` * `music-generation` * `speech-generation` * `disable-onedrive-upload` * `disable-talk-to-content` * `disable-google-drive-upload` * `disable-welcome-emails` * `disable-canvas` * `canvas-workspace` * `canvas-app-builder` * `skills` * `skill-sharing` * `skill-sharing-without-admin-approval` * `disable-projects` * `sobi` * `enable-end-user-sharing-with-groups` * `single-agent-orchestration` * `multi-agent-orchestration` * `cross-product-intelligence` * `workflow-agents` * `in-app-notifications` * `code-extraction` * `remote-vm` * `license-tier-badge` * `agent-marketplace` * `agent-scheduling` * `preview-agents`
      */
     features?: {[key: string]: string} | null;
+    /**
+     * Optional. Controls the global feature toggle state for the engine.
+     */
+    globalFeatureToggleState?: string | null;
     /**
      * Optional. The industry vertical that the engine registers. The restriction of the Engine industry vertical is based on DataStore: Vertical on Engine has to match vertical of the DataStore linked to the engine.
      */
@@ -17817,7 +17923,7 @@ export namespace discoveryengine_v1alpha {
      */
     autoRenew?: boolean | null;
     /**
-     * Output only. Indication of whether the subscription is terminated earlier than the expiration date. This is usually terminated by pipeline once the subscription gets terminated from subsv3.
+     * Output only. Indication of whether the subscription is terminated earlier than the expiration date.
      */
     earlyTerminated?: boolean | null;
     /**
@@ -17903,6 +18009,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. Customer provided configurations.
      */
     customerProvidedConfig?: Schema$GoogleCloudDiscoveryengineV1ProjectCustomerProvidedConfig;
+    /**
+     * Output only. The current experience state of the project.
+     */
+    experienceState?: string | null;
     /**
      * Output only. Full resource name of the project, for example `projects/{project\}`. Note that when making requests, project number and project id are both acceptable, but the server will always respond in project number.
      */
@@ -20444,6 +20554,7 @@ export namespace discoveryengine_v1alpha {
      *   //   "configurableBillingStatus": {},
      *   //   "createTime": "my_createTime",
      *   //   "customerProvidedConfig": {},
+     *   //   "experienceState": "my_experienceState",
      *   //   "name": "my_name",
      *   //   "provisionCompletionTime": "my_provisionCompletionTime",
      *   //   "serviceTermsMap": {}
@@ -20599,6 +20710,7 @@ export namespace discoveryengine_v1alpha {
      *       //   "configurableBillingStatus": {},
      *       //   "createTime": "my_createTime",
      *       //   "customerProvidedConfig": {},
+     *       //   "experienceState": "my_experienceState",
      *       //   "name": "my_name",
      *       //   "provisionCompletionTime": "my_provisionCompletionTime",
      *       //   "serviceTermsMap": {}
@@ -20612,6 +20724,7 @@ export namespace discoveryengine_v1alpha {
      *   //   "configurableBillingStatus": {},
      *   //   "createTime": "my_createTime",
      *   //   "customerProvidedConfig": {},
+     *   //   "experienceState": "my_experienceState",
      *   //   "name": "my_name",
      *   //   "provisionCompletionTime": "my_provisionCompletionTime",
      *   //   "serviceTermsMap": {}
@@ -20765,6 +20878,7 @@ export namespace discoveryengine_v1alpha {
      *       //   "acceptDataUseTerms": false,
      *       //   "dataUseTermsVersion": "my_dataUseTermsVersion",
      *       //   "idpConfig": {},
+     *       //   "provisionIntent": "my_provisionIntent",
      *       //   "saasParams": {}
      *       // }
      *     },
@@ -20935,6 +21049,7 @@ export namespace discoveryengine_v1alpha {
      *   //   "configurableBillingStatus": {},
      *   //   "createTime": "my_createTime",
      *   //   "customerProvidedConfig": {},
+     *   //   "experienceState": "my_experienceState",
      *   //   "name": "my_name",
      *   //   "provisionCompletionTime": "my_provisionCompletionTime",
      *   //   "serviceTermsMap": {}
@@ -21162,7 +21277,7 @@ export namespace discoveryengine_v1alpha {
     }
 
     /**
-     * This method provides suggestions for users and groups managed in an external identity provider, based on the provided prefix.
+     * This method provides suggestions for users and groups managed in an external identity provider, based on the provided prefix. See CompleteExternalIdentitiesRequest.prefix_query for the fields matched during completion.
      * @example
      * ```js
      * // Before running the sample:
@@ -21204,7 +21319,7 @@ export namespace discoveryengine_v1alpha {
      *       maxSuggestions: 'placeholder-value',
      *       // Required. The parent location resource name, such as `projects/x/locations/global`.
      *       parent: 'projects/my-project/locations/my-location',
-     *       // Required. The prefix to search for. For users, this prefix is matched against the `primary_email`. For groups, this prefix is matched against the `display_name`. The matching is case-insensitive.
+     *       // Required. The prefix to search for. The matching is case-insensitive. * Users: * Supported: `primary_email` (SCIM `emails[type=work]` only), `given_name`, and `family_name` by leading prefix, and `display_name` per word. * Not supported: `subject`, `external_id`, and SCIM `userName` (not stored; only used to derive `subject` when `google.subject` maps `user.userName`). * Groups: * Supported: `display_name` per word.
      *       prefixQuery: 'placeholder-value',
      *       // Optional. Whether to use scim identities for external identity completion. If false, we will call the Microsoft graph API to fetch the external identities.
      *       useScimIdentities: 'placeholder-value',
@@ -21995,6 +22110,7 @@ export namespace discoveryengine_v1alpha {
      *       //   "acceptDataUseTerms": false,
      *       //   "dataUseTermsVersion": "my_dataUseTermsVersion",
      *       //   "idpConfig": {},
+     *       //   "provisionIntent": "my_provisionIntent",
      *       //   "saasParams": {}
      *       // }
      *     },
@@ -23306,7 +23422,7 @@ export namespace discoveryengine_v1alpha {
      */
     parent?: string;
     /**
-     * Required. The prefix to search for. For users, this prefix is matched against the `primary_email`. For groups, this prefix is matched against the `display_name`. The matching is case-insensitive.
+     * Required. The prefix to search for. The matching is case-insensitive. * Users: * Supported: `primary_email` (SCIM `emails[type=work]` only), `given_name`, and `family_name` by leading prefix, and `display_name` per word. * Not supported: `subject`, `external_id`, and SCIM `userName` (not stored; only used to derive `subject` when `google.subject` maps `user.userName`). * Groups: * Supported: `display_name` per word.
      */
     prefixQuery?: string;
     /**
@@ -46640,7 +46756,7 @@ export namespace discoveryengine_v1alpha {
      *           'placeholder-value',
      *         // Optional. BCP-47 language tag (e.g. "en", "fr-CA"). Used to localize human-readable strings in the response, such as the model selector `display_name` / `description` on `WidgetConfig.UiSettings.ModelConfigInfo`. Empty / unset falls back to the default language (English).
      *         languageCode: 'placeholder-value',
-     *         // Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page (screen/4Vn9gQKbN8tb7gm) to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
+     *         // Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
      *         modelInfoView: 'placeholder-value',
      *         // Required. Full WidgetConfig resource name. Format: `projects/{project\}/locations/{location\}/collections/{collection_id\}/dataStores/{data_store_id\}/widgetConfigs/{widget_config_id\}`
      *         name: 'projects/my-project/locations/my-location/collections/my-collection/dataStores/my-dataStore/widgetConfigs/my-widgetConfig',
@@ -47048,7 +47164,7 @@ export namespace discoveryengine_v1alpha {
      */
     languageCode?: string;
     /**
-     * Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page (screen/4Vn9gQKbN8tb7gm) to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
+     * Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
      */
     modelInfoView?: string;
     /**
@@ -47180,9 +47296,12 @@ export namespace discoveryengine_v1alpha {
      *         //   "connectorTenantInfo": {},
      *         //   "createTime": "my_createTime",
      *         //   "dataStoreIds": [],
+     *         //   "delayedGlobalFeatureToggleStateAllowed": false,
      *         //   "disableAnalytics": false,
      *         //   "displayName": "my_displayName",
+     *         //   "effectiveFeatures": {},
      *         //   "features": {},
+     *         //   "globalFeatureToggleState": "my_globalFeatureToggleState",
      *         //   "industryVertical": "my_industryVertical",
      *         //   "knowledgeGraphConfig": {},
      *         //   "marketplaceAgentVisibility": "my_marketplaceAgentVisibility",
@@ -47513,9 +47632,12 @@ export namespace discoveryengine_v1alpha {
      *   //   "connectorTenantInfo": {},
      *   //   "createTime": "my_createTime",
      *   //   "dataStoreIds": [],
+     *   //   "delayedGlobalFeatureToggleStateAllowed": false,
      *   //   "disableAnalytics": false,
      *   //   "displayName": "my_displayName",
+     *   //   "effectiveFeatures": {},
      *   //   "features": {},
+     *   //   "globalFeatureToggleState": "my_globalFeatureToggleState",
      *   //   "industryVertical": "my_industryVertical",
      *   //   "knowledgeGraphConfig": {},
      *   //   "marketplaceAgentVisibility": "my_marketplaceAgentVisibility",
@@ -48326,9 +48448,12 @@ export namespace discoveryengine_v1alpha {
      *         //   "connectorTenantInfo": {},
      *         //   "createTime": "my_createTime",
      *         //   "dataStoreIds": [],
+     *         //   "delayedGlobalFeatureToggleStateAllowed": false,
      *         //   "disableAnalytics": false,
      *         //   "displayName": "my_displayName",
+     *         //   "effectiveFeatures": {},
      *         //   "features": {},
+     *         //   "globalFeatureToggleState": "my_globalFeatureToggleState",
      *         //   "industryVertical": "my_industryVertical",
      *         //   "knowledgeGraphConfig": {},
      *         //   "marketplaceAgentVisibility": "my_marketplaceAgentVisibility",
@@ -48361,9 +48486,12 @@ export namespace discoveryengine_v1alpha {
      *   //   "connectorTenantInfo": {},
      *   //   "createTime": "my_createTime",
      *   //   "dataStoreIds": [],
+     *   //   "delayedGlobalFeatureToggleStateAllowed": false,
      *   //   "disableAnalytics": false,
      *   //   "displayName": "my_displayName",
+     *   //   "effectiveFeatures": {},
      *   //   "features": {},
+     *   //   "globalFeatureToggleState": "my_globalFeatureToggleState",
      *   //   "industryVertical": "my_industryVertical",
      *   //   "knowledgeGraphConfig": {},
      *   //   "marketplaceAgentVisibility": "my_marketplaceAgentVisibility",
@@ -48545,9 +48673,12 @@ export namespace discoveryengine_v1alpha {
      *   //   "connectorTenantInfo": {},
      *   //   "createTime": "my_createTime",
      *   //   "dataStoreIds": [],
+     *   //   "delayedGlobalFeatureToggleStateAllowed": false,
      *   //   "disableAnalytics": false,
      *   //   "displayName": "my_displayName",
+     *   //   "effectiveFeatures": {},
      *   //   "features": {},
+     *   //   "globalFeatureToggleState": "my_globalFeatureToggleState",
      *   //   "industryVertical": "my_industryVertical",
      *   //   "knowledgeGraphConfig": {},
      *   //   "marketplaceAgentVisibility": "my_marketplaceAgentVisibility",
@@ -48732,9 +48863,12 @@ export namespace discoveryengine_v1alpha {
      *   //   "connectorTenantInfo": {},
      *   //   "createTime": "my_createTime",
      *   //   "dataStoreIds": [],
+     *   //   "delayedGlobalFeatureToggleStateAllowed": false,
      *   //   "disableAnalytics": false,
      *   //   "displayName": "my_displayName",
+     *   //   "effectiveFeatures": {},
      *   //   "features": {},
+     *   //   "globalFeatureToggleState": "my_globalFeatureToggleState",
      *   //   "industryVertical": "my_industryVertical",
      *   //   "knowledgeGraphConfig": {},
      *   //   "marketplaceAgentVisibility": "my_marketplaceAgentVisibility",
@@ -51195,6 +51329,7 @@ export namespace discoveryengine_v1alpha {
      *           //   "createTime": "my_createTime",
      *           //   "creationFailureReason": "my_creationFailureReason",
      *           //   "customPlaceholderText": "my_customPlaceholderText",
+     *           //   "defaultPinned": false,
      *           //   "deploymentFailureReason": "my_deploymentFailureReason",
      *           //   "description": "my_description",
      *           //   "dialogflowAgentDefinition": {},
@@ -51224,6 +51359,7 @@ export namespace discoveryengine_v1alpha {
      *   //   "createTime": "my_createTime",
      *   //   "creationFailureReason": "my_creationFailureReason",
      *   //   "customPlaceholderText": "my_customPlaceholderText",
+     *   //   "defaultPinned": false,
      *   //   "deploymentFailureReason": "my_deploymentFailureReason",
      *   //   "description": "my_description",
      *   //   "dialogflowAgentDefinition": {},
@@ -51552,6 +51688,7 @@ export namespace discoveryengine_v1alpha {
      *   //   "createTime": "my_createTime",
      *   //   "creationFailureReason": "my_creationFailureReason",
      *   //   "customPlaceholderText": "my_customPlaceholderText",
+     *   //   "defaultPinned": false,
      *   //   "deploymentFailureReason": "my_deploymentFailureReason",
      *   //   "description": "my_description",
      *   //   "dialogflowAgentDefinition": {},
@@ -51894,6 +52031,7 @@ export namespace discoveryengine_v1alpha {
      *           //   "createTime": "my_createTime",
      *           //   "creationFailureReason": "my_creationFailureReason",
      *           //   "customPlaceholderText": "my_customPlaceholderText",
+     *           //   "defaultPinned": false,
      *           //   "deploymentFailureReason": "my_deploymentFailureReason",
      *           //   "description": "my_description",
      *           //   "dialogflowAgentDefinition": {},
@@ -51923,6 +52061,7 @@ export namespace discoveryengine_v1alpha {
      *   //   "createTime": "my_createTime",
      *   //   "creationFailureReason": "my_creationFailureReason",
      *   //   "customPlaceholderText": "my_customPlaceholderText",
+     *   //   "defaultPinned": false,
      *   //   "deploymentFailureReason": "my_deploymentFailureReason",
      *   //   "description": "my_description",
      *   //   "dialogflowAgentDefinition": {},
@@ -61666,7 +61805,7 @@ export namespace discoveryengine_v1alpha {
      *           'placeholder-value',
      *         // Optional. BCP-47 language tag (e.g. "en", "fr-CA"). Used to localize human-readable strings in the response, such as the model selector `display_name` / `description` on `WidgetConfig.UiSettings.ModelConfigInfo`. Empty / unset falls back to the default language (English).
      *         languageCode: 'placeholder-value',
-     *         // Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page (screen/4Vn9gQKbN8tb7gm) to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
+     *         // Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
      *         modelInfoView: 'placeholder-value',
      *         // Required. Full WidgetConfig resource name. Format: `projects/{project\}/locations/{location\}/collections/{collection_id\}/dataStores/{data_store_id\}/widgetConfigs/{widget_config_id\}`
      *         name: 'projects/my-project/locations/my-location/collections/my-collection/engines/my-engine/widgetConfigs/my-widgetConfig',
@@ -62074,7 +62213,7 @@ export namespace discoveryengine_v1alpha {
      */
     languageCode?: string;
     /**
-     * Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page (screen/4Vn9gQKbN8tb7gm) to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
+     * Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
      */
     modelInfoView?: string;
     /**
@@ -78773,7 +78912,7 @@ export namespace discoveryengine_v1alpha {
      *         'placeholder-value',
      *       // Optional. BCP-47 language tag (e.g. "en", "fr-CA"). Used to localize human-readable strings in the response, such as the model selector `display_name` / `description` on `WidgetConfig.UiSettings.ModelConfigInfo`. Empty / unset falls back to the default language (English).
      *       languageCode: 'placeholder-value',
-     *       // Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page (screen/4Vn9gQKbN8tb7gm) to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
+     *       // Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
      *       modelInfoView: 'placeholder-value',
      *       // Required. Full WidgetConfig resource name. Format: `projects/{project\}/locations/{location\}/collections/{collection_id\}/dataStores/{data_store_id\}/widgetConfigs/{widget_config_id\}`
      *       name: 'projects/my-project/locations/my-location/dataStores/my-dataStore/widgetConfigs/my-widgetConfig',
@@ -79178,7 +79317,7 @@ export namespace discoveryengine_v1alpha {
      */
     languageCode?: string;
     /**
-     * Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page (screen/4Vn9gQKbN8tb7gm) to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
+     * Optional. Selects which view of `WidgetConfig.UiSettings.ModelConfigInfo` the backend computes. `ADMIN` is set by the Cloud Console admin "Feature Management" page to receive the admin-surfaced model set with `ResolvedModel.admin_view` populated; `END_USER_MOBILE` is set by the Gemini Enterprise mobile app to receive the mobile model set; unset / `END_USER_WEB` returns the end-user web selector.
      */
     modelInfoView?: string;
     /**
