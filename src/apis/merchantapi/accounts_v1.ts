@@ -265,7 +265,7 @@ export namespace merchantapi_accounts_v1 {
    */
   export interface Schema$AccountService {
     /**
-     * Service type for account aggregation. This enables the provider, which is an advanced account, to manage multiple sub-accounts (client accounts). Through this service, the advanced account provider can perform administrative and operational tasks across all linked sub-accounts. This is useful for agencies, aggregators, or large retailers that need centralized control over many Merchant Center accounts.
+     * Service type for account aggregation. This enables the provider, which is a multi-client advanced account, to manage multiple sub-accounts (client accounts). Through this service, the service provider can perform administrative and operational tasks across all linked sub-accounts. This is used by store builders (ecommerce platforms), channel partners, marketplaces, multi-brand retailers, and international retailers that need centralized control over sub-accounts in Merchant Center.
      */
     accountAggregation?: Schema$AccountAggregation;
     /**

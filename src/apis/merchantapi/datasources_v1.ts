@@ -383,6 +383,10 @@ export namespace merchantapi_datasources_v1 {
    */
   export interface Schema$PrimaryProductDataSource {
     /**
+     * Optional. Immutable. Specifies the type of data source channel.
+     */
+    channel?: string | null;
+    /**
      * Optional. Immutable. The two-letter ISO 639-1 language of the items in the data source. `feedLabel` and `contentLanguage` must be either both set or unset. The fields can only be unset for data sources without file input. If set, the data source will only accept products matching this combination. If unset, the data source will accept products without that restriction.
      */
     contentLanguage?: string | null;
