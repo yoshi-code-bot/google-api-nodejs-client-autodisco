@@ -5203,6 +5203,10 @@ export namespace discoveryengine_v1 {
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaObservabilityConfig {
     /**
+     * Optional. The Cloud Storage bucket that agent artifacts are written to. Artifacts are the multi-modal content (e.g. generated images and files) that an agent produces while handling an invocation. Persisting them makes them available for inspection alongside the observability traces and logs emitted for the same invocation. This must be a bucket URI without an object path. Example value: `gs://my-observability-bucket`. The bucket must be owned by the same project as the resource, and the Gemini Enterprise service agent must be able to write to it. Otherwise an `INVALID_ARGUMENT` or `PERMISSION_DENIED` error is returned. If unset, artifacts are only held for the duration of the invocation and are not persisted. This field has no effect when set on a Project; setting it there returns an `INVALID_ARGUMENT` error. Configure it on an Engine or an Agent instead. When set on both, the agent-level value takes precedence.
+     */
+    artifactGcsBucket?: string | null;
+    /**
      * Optional. Enables observability. If `false`, all other flags are ignored.
      */
     observabilityEnabled?: boolean | null;
@@ -5210,6 +5214,10 @@ export namespace discoveryengine_v1 {
      * Optional. Enables sensitive logging. Sensitive logging includes customer core content (e.g. prompts, responses). If `false`, will sanitize all sensitive fields.
      */
     sensitiveLoggingEnabled?: boolean | null;
+    /**
+     * Optional. Logs the end user's identity on activity log entries even when `sensitive_logging_enabled` is `false`. Prompt and response content stays redacted. Has no effect when `sensitive_logging_enabled` is `true`. Setting this field on a Project returns an `INVALID_ARGUMENT` error. Configure it on an Engine or an Agent instead.
+     */
+    userPrincipalLoggingEnabled?: boolean | null;
   }
   /**
    * Response message for CrawlRateManagementService.ObtainCrawlRate method. The response contains organcic or dedicated crawl rate time series data for monitoring, depending on whether dedicated crawl rate is set.
@@ -15523,6 +15531,10 @@ export namespace discoveryengine_v1 {
      */
     idpConfig?: Schema$GoogleCloudDiscoveryengineV1IdpConfig;
     /**
+     * Optional. Runs only the common project-level pre-provisioning steps (service agents, agent identity pools, project-scoped extension bindings, App Hub registry, Sobi agent default identity, and Sobi default Model Armor template) without reading or writing the Customer, Collection, or UserStore tables, CapabilityConfig, tenant project, default engine, or trial licenses when `true`. Assumes no customer exists yet. Customer-level or non-SOBI fields (`accept_data_use_terms`, `data_use_terms_version`, `saas_params`, `idp_config`, and `PROVISION_INTENT_LEGACY`) are rejected with `INVALID_ARGUMENT`, and the returned completed `Operation` has an empty response.
+     */
+    preProvisionMode?: boolean | null;
+    /**
      * Optional. The caller states whether the provisioning is for the new or the classic Gemini Enterprise experience.
      */
     provisionIntent?: string | null;
@@ -19506,6 +19518,7 @@ export namespace discoveryengine_v1 {
      *       //   "acceptDataUseTerms": false,
      *       //   "dataUseTermsVersion": "my_dataUseTermsVersion",
      *       //   "idpConfig": {},
+     *       //   "preProvisionMode": false,
      *       //   "provisionIntent": "my_provisionIntent",
      *       //   "saasParams": {}
      *       // }
@@ -20033,6 +20046,7 @@ export namespace discoveryengine_v1 {
      *       //   "acceptDataUseTerms": false,
      *       //   "dataUseTermsVersion": "my_dataUseTermsVersion",
      *       //   "idpConfig": {},
+     *       //   "preProvisionMode": false,
      *       //   "provisionIntent": "my_provisionIntent",
      *       //   "saasParams": {}
      *       // }
@@ -22608,17 +22622,14 @@ export namespace discoveryengine_v1 {
      *   // Do the magic
      *   const res =
      *     await discoveryengine.projects.locations.collections.dataConnector.mcp({
-     *       collectionsId: 'placeholder-value',
      *       // The HTTP Content-Type header value specifying the content type of the body.
-     *       contentType: 'placeholder-value',
+     *       'httpBody.contentType': 'placeholder-value',
      *       // The HTTP request/response body as raw binary.
-     *       data: 'placeholder-value',
+     *       'httpBody.data': 'placeholder-value',
      *       // Application specific response metadata. Must be set in the first response for streaming APIs.
-     *       extensions: 'placeholder-value',
-     *
-     *       locationsId: 'placeholder-value',
-     *
-     *       projectsId: 'placeholder-value',
+     *       'httpBody.extensions': 'placeholder-value',
+     *       // Required. The DataConnector the MCP request is for. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/dataConnector`
+     *       name: 'projects/my-project/locations/my-location/collections/my-collection/dataConnector',
      *     });
      *   console.log(res.data);
      *
@@ -22703,18 +22714,15 @@ export namespace discoveryengine_v1 {
       const parameters = {
         options: Object.assign(
           {
-            url: (
-              rootUrl +
-              '/v1/projects/{projectsId}/locations/{locationsId}/collections/{collectionsId}/dataConnector/mcp'
-            ).replace(/([^:]\/)\/+/g, '$1'),
+            url: (rootUrl + '/v1/{+name}/mcp').replace(/([^:]\/)\/+/g, '$1'),
             method: 'DELETE',
             apiVersion: '',
           },
           options
         ),
         params,
-        requiredParams: ['projectsId', 'locationsId', 'collectionsId'],
-        pathParams: ['collectionsId', 'locationsId', 'projectsId'],
+        requiredParams: ['name'],
+        pathParams: ['name'],
         context: this.context,
       };
       if (callback) {
@@ -22730,29 +22738,21 @@ export namespace discoveryengine_v1 {
 
   export interface Params$Resource$Projects$Locations$Collections$Dataconnector$Mcp extends StandardParameters {
     /**
-     *
-     */
-    collectionsId?: string;
-    /**
      * The HTTP Content-Type header value specifying the content type of the body.
      */
-    contentType?: string;
+    'httpBody.contentType'?: string;
     /**
      * The HTTP request/response body as raw binary.
      */
-    data?: string;
+    'httpBody.data'?: string;
     /**
      * Application specific response metadata. Must be set in the first response for streaming APIs.
      */
-    extensions?: {[key: string]: any}[];
+    'httpBody.extensions'?: {[key: string]: any}[];
     /**
-     *
+     * Required. The DataConnector the MCP request is for. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/dataConnector`
      */
-    locationsId?: string;
-    /**
-     *
-     */
-    projectsId?: string;
+    name?: string;
   }
 
   export class Resource$Projects$Locations$Collections$Dataconnector$Operations {

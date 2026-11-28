@@ -3095,24 +3095,6 @@ export namespace discoveryengine_v1alpha {
     uri?: string | null;
   }
   /**
-   * Request message for UserStoreService.BatchUpdateUserAvailabilities method.
-   */
-  export interface Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesRequest {
-    /**
-     * Required. The UserAvailabilitys to update. Maximum of 1000 at a time: if more are passed in, returns INVALID_ARGUMENT. Batch is all or nothing; either all updates succeed or none. The `parent` field in each child request must either be empty, or match the `parent` field in the batch request. If there is a mismatch, that will also result in an INVALID_ARGUMENT being returned.
-     */
-    requests?: Schema$GoogleCloudDiscoveryengineV1alphaUpdateUserAvailabilityRequest[];
-  }
-  /**
-   * Response message for UserStoreService.BatchUpdateUserAvailabilities method.
-   */
-  export interface Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse {
-    /**
-     * The updated UserAvailabilitys.
-     */
-    userAvailabilities?: Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability[];
-  }
-  /**
    * Metadata related to the progress of the UserLicenseService.BatchUpdateUserLicenses operation. This will be returned by the google.longrunning.Operation.metadata field.
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserLicensesMetadata {
@@ -8035,19 +8017,6 @@ export namespace discoveryengine_v1alpha {
     totalSize?: number | null;
   }
   /**
-   * Response message for UserStoreService.ListUserAvailabilities method.
-   */
-  export interface Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse {
-    /**
-     * A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
-     */
-    nextPageToken?: string | null;
-    /**
-     * The UserAvailabilitys matching the request.
-     */
-    userAvailabilities?: Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability[];
-  }
-  /**
    * Response message for UserLicenseService.ListUserLicenses.
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaListUserLicensesResponse {
@@ -8108,6 +8077,10 @@ export namespace discoveryengine_v1alpha {
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaObservabilityConfig {
     /**
+     * Optional. The Cloud Storage bucket that agent artifacts are written to. Artifacts are the multi-modal content (e.g. generated images and files) that an agent produces while handling an invocation. Persisting them makes them available for inspection alongside the observability traces and logs emitted for the same invocation. This must be a bucket URI without an object path. Example value: `gs://my-observability-bucket`. The bucket must be owned by the same project as the resource, and the Gemini Enterprise service agent must be able to write to it. Otherwise an `INVALID_ARGUMENT` or `PERMISSION_DENIED` error is returned. If unset, artifacts are only held for the duration of the invocation and are not persisted. This field has no effect when set on a Project; setting it there returns an `INVALID_ARGUMENT` error. Configure it on an Engine or an Agent instead. When set on both, the agent-level value takes precedence.
+     */
+    artifactGcsBucket?: string | null;
+    /**
      * Optional. Enables observability. If `false`, all other flags are ignored.
      */
     observabilityEnabled?: boolean | null;
@@ -8115,6 +8088,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. Enables sensitive logging. Sensitive logging includes customer core content (e.g. prompts, responses). If `false`, will sanitize all sensitive fields.
      */
     sensitiveLoggingEnabled?: boolean | null;
+    /**
+     * Optional. Logs the end user's identity on activity log entries even when `sensitive_logging_enabled` is `false`. Prompt and response content stays redacted. Has no effect when `sensitive_logging_enabled` is `true`. Setting this field on a Project returns an `INVALID_ARGUMENT` error. Configure it on an Engine or an Agent instead.
+     */
+    userPrincipalLoggingEnabled?: boolean | null;
   }
   /**
    * Request message for CrawlRateManagementService.ObtainCrawlRate method.
@@ -8491,6 +8468,10 @@ export namespace discoveryengine_v1alpha {
      * Optional. The identity provider for this location. When provided, the location's AclConfig is set from it as part of provisioning.
      */
     idpConfig?: Schema$GoogleCloudDiscoveryengineV1alphaIdpConfig;
+    /**
+     * Optional. Runs only the common project-level pre-provisioning steps (service agents, agent identity pools, project-scoped extension bindings, App Hub registry, Sobi agent default identity, and Sobi default Model Armor template) without reading or writing the Customer, Collection, or UserStore tables, CapabilityConfig, tenant project, default engine, or trial licenses when `true`. Assumes no customer exists yet. Customer-level or non-SOBI fields (`accept_data_use_terms`, `data_use_terms_version`, `saas_params`, `idp_config`, and `PROVISION_INTENT_LEGACY`) are rejected with `INVALID_ARGUMENT`, and the returned completed `Operation` has an empty response.
+     */
+    preProvisionMode?: boolean | null;
     /**
      * Optional. The caller states whether the provisioning is for the new or the classic Gemini Enterprise experience.
      */
@@ -11803,6 +11784,40 @@ export namespace discoveryengine_v1alpha {
     value?: number | null;
   }
   /**
+   * Request message for the AgentService.TransferAgentOwner method.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerRequest {
+    /**
+     * Optional. Transfers ownership to the caller.
+     */
+    currentUser?: Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerRequestTransferToCurrentUser;
+    /**
+     * Optional. What happens to the previous owner after the transfer. If unspecified, the previous owner is removed and loses access.
+     */
+    previousOwnerDisposition?: string | null;
+    /**
+     * Optional. Transfers ownership to a specific principal.
+     */
+    targetPrincipal?: Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerRequestTransferToTargetPrincipal;
+  }
+  /**
+   * Transfers ownership to the caller. The caller must be an individual user, not a service account.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerRequestTransferToCurrentUser {}
+  /**
+   * Transfers ownership to a specific user.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerRequestTransferToTargetPrincipal {
+    /**
+     * Required. The new owner, as an IAM member string. Use `user:` for Google identities (e.g. `user:alice@example.com`); use `principal://` for workforce identity federation principals. The new owner must be an individual user who has signed in to the app and has a license that allows creating agents. Groups and service accounts are not supported.
+     */
+    principal?: string | null;
+  }
+  /**
+   * Response message for the AgentService.TransferAgentOwner method.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse {}
+  /**
    * Metadata associated with a tune operation.
    */
   export interface Schema$GoogleCloudDiscoveryengineV1alphaTuneEngineMetadata {
@@ -11883,44 +11898,6 @@ export namespace discoveryengine_v1alpha {
      * Operation last update time. If the operation is done, this is also the finish time.
      */
     updateTime?: string | null;
-  }
-  /**
-   * Request message for UserStoreService.UpdateUserAvailability method. Also nested within BatchUpdateUserAvailabilityRequest for the UserStoreService.BatchUpdateUserAvailability method. `parent` is a required field when this message is used for a single Update, but is optional when used for a BatchUpdate.
-   */
-  export interface Schema$GoogleCloudDiscoveryengineV1alphaUpdateUserAvailabilityRequest {
-    /**
-     * Optional. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     */
-    parent?: string | null;
-    /**
-     * Optional. The list of fields to update. Only 'state' is supported; if unset, defaults to 'state'.
-     */
-    updateMask?: string | null;
-    /**
-     * Required. The UserAvailability to update.
-     */
-    userAvailability?: Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability;
-  }
-  /**
-   * Tracks whether a resource is available for a given user (distinct from whether the user is allowed to use that resource by licensing, etc).
-   */
-  export interface Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability {
-    /**
-     * Optional. Deprecated: use `update_time` only.
-     */
-    observeTime?: string | null;
-    /**
-     * Optional. Whether the user can currently use the resource. Set by the caller on update. If unspecified, defaults to `ACTIVE`.
-     */
-    state?: string | null;
-    /**
-     * Output only. Timestamp when the most recent update to `state` was saved.
-     */
-    updateTime?: string | null;
-    /**
-     * Required. Immutable. User principal (IdP subject for Workforce Identity, email for Google sign-in).
-     */
-    userPrincipal?: string | null;
   }
   /**
    * UserEvent captures all metadata information Discovery Engine API needs to know about how end users interact with your website.
@@ -12117,6 +12094,23 @@ export namespace discoveryengine_v1alpha {
      */
     name?: string | null;
   }
+  /**
+   * Request message for the AuthorizationService.ValidateUserAuthorization method.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationRequest {
+    /**
+     * Required. The downstream connector (auth provider) resource name from the consent redirect (`auth_provider_name`). Named `downstream_connector` to disambiguate from the "connector" in the remote agent.
+     */
+    downstreamConnector?: string | null;
+    /**
+     * Required. The opaque, encrypted validation state returned by Auth Manager in the consent redirect. Forwarded verbatim to FinalizeCredentials.
+     */
+    userIdValidationState?: string | null;
+  }
+  /**
+   * Response message for the AuthorizationService.ValidateUserAuthorization method.
+   */
+  export interface Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse {}
   /**
    * Standard characteristics of a video media view.
    */
@@ -21116,6 +21110,7 @@ export namespace discoveryengine_v1alpha {
      *       //   "acceptDataUseTerms": false,
      *       //   "dataUseTermsVersion": "my_dataUseTermsVersion",
      *       //   "idpConfig": {},
+     *       //   "preProvisionMode": false,
      *       //   "provisionIntent": "my_provisionIntent",
      *       //   "saasParams": {}
      *       // }
@@ -22348,6 +22343,7 @@ export namespace discoveryengine_v1alpha {
      *       //   "acceptDataUseTerms": false,
      *       //   "dataUseTermsVersion": "my_dataUseTermsVersion",
      *       //   "idpConfig": {},
+     *       //   "preProvisionMode": false,
      *       //   "provisionIntent": "my_provisionIntent",
      *       //   "saasParams": {}
      *       // }
@@ -27524,17 +27520,14 @@ export namespace discoveryengine_v1alpha {
      *   // Do the magic
      *   const res =
      *     await discoveryengine.projects.locations.collections.dataConnector.mcp({
-     *       collectionsId: 'placeholder-value',
      *       // The HTTP Content-Type header value specifying the content type of the body.
-     *       contentType: 'placeholder-value',
+     *       'httpBody.contentType': 'placeholder-value',
      *       // The HTTP request/response body as raw binary.
-     *       data: 'placeholder-value',
+     *       'httpBody.data': 'placeholder-value',
      *       // Application specific response metadata. Must be set in the first response for streaming APIs.
-     *       extensions: 'placeholder-value',
-     *
-     *       locationsId: 'placeholder-value',
-     *
-     *       projectsId: 'placeholder-value',
+     *       'httpBody.extensions': 'placeholder-value',
+     *       // Required. The DataConnector the MCP request is for. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/dataConnector`
+     *       name: 'projects/my-project/locations/my-location/collections/my-collection/dataConnector',
      *     });
      *   console.log(res.data);
      *
@@ -27619,18 +27612,18 @@ export namespace discoveryengine_v1alpha {
       const parameters = {
         options: Object.assign(
           {
-            url: (
-              rootUrl +
-              '/v1alpha/projects/{projectsId}/locations/{locationsId}/collections/{collectionsId}/dataConnector/mcp'
-            ).replace(/([^:]\/)\/+/g, '$1'),
+            url: (rootUrl + '/v1alpha/{+name}/mcp').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
             method: 'DELETE',
             apiVersion: '',
           },
           options
         ),
         params,
-        requiredParams: ['projectsId', 'locationsId', 'collectionsId'],
-        pathParams: ['collectionsId', 'locationsId', 'projectsId'],
+        requiredParams: ['name'],
+        pathParams: ['name'],
         context: this.context,
       };
       if (callback) {
@@ -27858,29 +27851,21 @@ export namespace discoveryengine_v1alpha {
   }
   export interface Params$Resource$Projects$Locations$Collections$Dataconnector$Mcp extends StandardParameters {
     /**
-     *
-     */
-    collectionsId?: string;
-    /**
      * The HTTP Content-Type header value specifying the content type of the body.
      */
-    contentType?: string;
+    'httpBody.contentType'?: string;
     /**
      * The HTTP request/response body as raw binary.
      */
-    data?: string;
+    'httpBody.data'?: string;
     /**
      * Application specific response metadata. Must be set in the first response for streaming APIs.
      */
-    extensions?: {[key: string]: any}[];
+    'httpBody.extensions'?: {[key: string]: any}[];
     /**
-     *
+     * Required. The DataConnector the MCP request is for. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/dataConnector`
      */
-    locationsId?: string;
-    /**
-     *
-     */
-    projectsId?: string;
+    name?: string;
   }
   export interface Params$Resource$Projects$Locations$Collections$Dataconnector$Startconnectorrun extends StandardParameters {
     /**
@@ -52602,6 +52587,171 @@ export namespace discoveryengine_v1alpha {
         );
       }
     }
+
+    /**
+     * Transfers ownership of an Agent to a new owner. The new owner becomes the agent's only owner. The previous owner loses access unless `previous_owner_disposition` keeps them as a user. The previous owner's schedules and event triggers on the agent are disabled (their configuration stays on the agent), and the new owner is notified. Requires the `discoveryengine.agents.manage` permission on the agent. Private agents cannot be transferred. A failed call can be retried with the same request; the retry completes the transfer.
+     * @example
+     * ```js
+     * // Before running the sample:
+     * // - Enable the API at:
+     * //   https://console.developers.google.com/apis/api/discoveryengine.googleapis.com
+     * // - Login into gcloud by running:
+     * //   ```sh
+     * //   $ gcloud auth application-default login
+     * //   ```
+     * // - Install the npm module by running:
+     * //   ```sh
+     * //   $ npm install googleapis
+     * //   ```
+     *
+     * const {google} = require('googleapis');
+     * const discoveryengine = google.discoveryengine('v1alpha');
+     *
+     * async function main() {
+     *   const auth = new google.auth.GoogleAuth({
+     *     // Scopes can be specified either as an array or as a single, space-delimited string.
+     *     scopes: [
+     *       'https://www.googleapis.com/auth/cloud-platform',
+     *       'https://www.googleapis.com/auth/discoveryengine.assist.readwrite',
+     *       'https://www.googleapis.com/auth/discoveryengine.readwrite',
+     *       'https://www.googleapis.com/auth/discoveryengine.serving.readwrite',
+     *     ],
+     *   });
+     *
+     *   // Acquire an auth client, and bind it to all future calls
+     *   const authClient = await auth.getClient();
+     *   google.options({auth: authClient});
+     *
+     *   // Do the magic
+     *   const res =
+     *     await discoveryengine.projects.locations.collections.engines.assistants.agents.transferAgentOwner(
+     *       {
+     *         // Required. The name of the Agent whose ownership is being transferred. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/engines/{engine\}/assistants/{assistant\}/agents/{agent\}`
+     *         name: 'projects/my-project/locations/my-location/collections/my-collection/engines/my-engine/assistants/my-assistant/agents/my-agent',
+     *
+     *         // Request body metadata
+     *         requestBody: {
+     *           // request body parameters
+     *           // {
+     *           //   "currentUser": {},
+     *           //   "previousOwnerDisposition": "my_previousOwnerDisposition",
+     *           //   "targetPrincipal": {}
+     *           // }
+     *         },
+     *       },
+     *     );
+     *   console.log(res.data);
+     *
+     *   // Example response
+     *   // {}
+     * }
+     *
+     * main().catch(e => {
+     *   console.error(e);
+     *   throw e;
+     * });
+     *
+     * ```
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    transferAgentOwner(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner,
+      options: StreamMethodOptions
+    ): Promise<GaxiosResponseWithHTTP2<Readable>>;
+    transferAgentOwner(
+      params?: Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner,
+      options?: MethodOptions
+    ): Promise<
+      GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+    >;
+    transferAgentOwner(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    transferAgentOwner(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>,
+      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+    ): void;
+    transferAgentOwner(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner,
+      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+    ): void;
+    transferAgentOwner(
+      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+    ): void;
+    transferAgentOwner(
+      paramsOrCallback?:
+        | Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | Promise<
+          GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>
+        >
+      | Promise<GaxiosResponseWithHTTP2<Readable>> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params =
+          {} as Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl =
+        options.rootUrl || 'https://discoveryengine.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1alpha/{+name}:transferAgentOwner').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+            apiVersion: '',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['name'],
+        pathParams: ['name'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerResponse>(
+          parameters
+        );
+      }
+    }
   }
 
   export interface Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Create extends StandardParameters {
@@ -52663,6 +52813,17 @@ export namespace discoveryengine_v1alpha {
      * Request body metadata
      */
     requestBody?: Schema$GoogleCloudDiscoveryengineV1alphaAgent;
+  }
+  export interface Params$Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Transferagentowner extends StandardParameters {
+    /**
+     * Required. The name of the Agent whose ownership is being transferred. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/engines/{engine\}/assistants/{assistant\}/agents/{agent\}`
+     */
+    name?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$GoogleCloudDiscoveryengineV1alphaTransferAgentOwnerRequest;
   }
 
   export class Resource$Projects$Locations$Collections$Engines$Assistants$Agents$Files {
@@ -59467,6 +59628,169 @@ export namespace discoveryengine_v1alpha {
         );
       }
     }
+
+    /**
+     * Validates an A2A 3-legged-OAuth (3LO) downstream-auth consent flow after the user returns from the third-party consent screen, and finalizes the downstream credential with Auth Manager.
+     * @example
+     * ```js
+     * // Before running the sample:
+     * // - Enable the API at:
+     * //   https://console.developers.google.com/apis/api/discoveryengine.googleapis.com
+     * // - Login into gcloud by running:
+     * //   ```sh
+     * //   $ gcloud auth application-default login
+     * //   ```
+     * // - Install the npm module by running:
+     * //   ```sh
+     * //   $ npm install googleapis
+     * //   ```
+     *
+     * const {google} = require('googleapis');
+     * const discoveryengine = google.discoveryengine('v1alpha');
+     *
+     * async function main() {
+     *   const auth = new google.auth.GoogleAuth({
+     *     // Scopes can be specified either as an array or as a single, space-delimited string.
+     *     scopes: [
+     *       'https://www.googleapis.com/auth/cloud-platform',
+     *       'https://www.googleapis.com/auth/discoveryengine.readwrite',
+     *       'https://www.googleapis.com/auth/discoveryengine.serving.readwrite',
+     *     ],
+     *   });
+     *
+     *   // Acquire an auth client, and bind it to all future calls
+     *   const authClient = await auth.getClient();
+     *   google.options({auth: authClient});
+     *
+     *   // Do the magic
+     *   const res =
+     *     await discoveryengine.projects.locations.collections.engines.sessions.validateUserAuthorization(
+     *       {
+     *         // Required. The resource name of the assist Session that initiated the consent flow. Used together with `downstream_connector` to recover the server-stored `consent_nonce`. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/engines/{engine\}/sessions/{session\}`
+     *         session:
+     *           'projects/my-project/locations/my-location/collections/my-collection/engines/my-engine/sessions/my-session',
+     *
+     *         // Request body metadata
+     *         requestBody: {
+     *           // request body parameters
+     *           // {
+     *           //   "downstreamConnector": "my_downstreamConnector",
+     *           //   "userIdValidationState": "my_userIdValidationState"
+     *           // }
+     *         },
+     *       },
+     *     );
+     *   console.log(res.data);
+     *
+     *   // Example response
+     *   // {}
+     * }
+     *
+     * main().catch(e => {
+     *   console.error(e);
+     *   throw e;
+     * });
+     *
+     * ```
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    validateUserAuthorization(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization,
+      options: StreamMethodOptions
+    ): Promise<GaxiosResponseWithHTTP2<Readable>>;
+    validateUserAuthorization(
+      params?: Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization,
+      options?: MethodOptions
+    ): Promise<
+      GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+    >;
+    validateUserAuthorization(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    validateUserAuthorization(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>,
+      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+    ): void;
+    validateUserAuthorization(
+      params: Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization,
+      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+    ): void;
+    validateUserAuthorization(
+      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+    ): void;
+    validateUserAuthorization(
+      paramsOrCallback?:
+        | Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | Promise<
+          GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>
+        >
+      | Promise<GaxiosResponseWithHTTP2<Readable>> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params =
+          {} as Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl =
+        options.rootUrl || 'https://discoveryengine.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (
+              rootUrl + '/v1alpha/{+session}:validateUserAuthorization'
+            ).replace(/([^:]\/)\/+/g, '$1'),
+            method: 'POST',
+            apiVersion: '',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['session'],
+        pathParams: ['session'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationResponse>(
+          parameters
+        );
+      }
+    }
   }
 
   export interface Params$Resource$Projects$Locations$Collections$Engines$Sessions$Create extends StandardParameters {
@@ -59536,6 +59860,17 @@ export namespace discoveryengine_v1alpha {
      * Request body metadata
      */
     requestBody?: Schema$GoogleCloudDiscoveryengineV1alphaSession;
+  }
+  export interface Params$Resource$Projects$Locations$Collections$Engines$Sessions$Validateuserauthorization extends StandardParameters {
+    /**
+     * Required. The resource name of the assist Session that initiated the consent flow. Used together with `downstream_connector` to recover the server-stored `consent_nonce`. Format: `projects/{project\}/locations/{location\}/collections/{collection\}/engines/{engine\}/sessions/{session\}`
+     */
+    session?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$GoogleCloudDiscoveryengineV1alphaValidateUserAuthorizationRequest;
   }
 
   export class Resource$Projects$Locations$Collections$Engines$Sessions$Alphaevolveexperiments {
@@ -88515,8 +88850,6 @@ export namespace discoveryengine_v1alpha {
     context: APIRequestContext;
     licenseConfigsUsageStats: Resource$Projects$Locations$Userstores$Licenseconfigsusagestats;
     operations: Resource$Projects$Locations$Userstores$Operations;
-    userAvailabilities: Resource$Projects$Locations$Userstores$Useravailabilities;
-    userAvailability: Resource$Projects$Locations$Userstores$Useravailability;
     userLicenses: Resource$Projects$Locations$Userstores$Userlicenses;
     constructor(context: APIRequestContext) {
       this.context = context;
@@ -88527,14 +88860,6 @@ export namespace discoveryengine_v1alpha {
       this.operations = new Resource$Projects$Locations$Userstores$Operations(
         this.context
       );
-      this.userAvailabilities =
-        new Resource$Projects$Locations$Userstores$Useravailabilities(
-          this.context
-        );
-      this.userAvailability =
-        new Resource$Projects$Locations$Userstores$Useravailability(
-          this.context
-        );
       this.userLicenses =
         new Resource$Projects$Locations$Userstores$Userlicenses(this.context);
     }
@@ -89571,559 +89896,6 @@ export namespace discoveryengine_v1alpha {
      * When set to `true`, operations that are reachable are returned as normal, and those that are unreachable are returned in the ListOperationsResponse.unreachable field. This can only be `true` when reading across collections. For example, when `parent` is set to `"projects/example/locations/-"`. This field is not supported by default and will result in an `UNIMPLEMENTED` error if set unless explicitly documented otherwise in service or product specific documentation.
      */
     returnPartialSuccess?: boolean;
-  }
-
-  export class Resource$Projects$Locations$Userstores$Useravailabilities {
-    context: APIRequestContext;
-    constructor(context: APIRequestContext) {
-      this.context = context;
-    }
-
-    /**
-     * Updates multiple UserAvailabilitys.
-     * @example
-     * ```js
-     * // Before running the sample:
-     * // - Enable the API at:
-     * //   https://console.developers.google.com/apis/api/discoveryengine.googleapis.com
-     * // - Login into gcloud by running:
-     * //   ```sh
-     * //   $ gcloud auth application-default login
-     * //   ```
-     * // - Install the npm module by running:
-     * //   ```sh
-     * //   $ npm install googleapis
-     * //   ```
-     *
-     * const {google} = require('googleapis');
-     * const discoveryengine = google.discoveryengine('v1alpha');
-     *
-     * async function main() {
-     *   const auth = new google.auth.GoogleAuth({
-     *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/discoveryengine.readwrite',
-     *       'https://www.googleapis.com/auth/discoveryengine.serving.readwrite',
-     *     ],
-     *   });
-     *
-     *   // Acquire an auth client, and bind it to all future calls
-     *   const authClient = await auth.getClient();
-     *   google.options({auth: authClient});
-     *
-     *   // Do the magic
-     *   const res =
-     *     await discoveryengine.projects.locations.userStores.userAvailabilities.batchUpdate(
-     *       {
-     *         // Required. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     *         parent:
-     *           'projects/my-project/locations/my-location/userStores/my-userStore',
-     *
-     *         // Request body metadata
-     *         requestBody: {
-     *           // request body parameters
-     *           // {
-     *           //   "requests": []
-     *           // }
-     *         },
-     *       },
-     *     );
-     *   console.log(res.data);
-     *
-     *   // Example response
-     *   // {
-     *   //   "userAvailabilities": []
-     *   // }
-     * }
-     *
-     * main().catch(e => {
-     *   console.error(e);
-     *   throw e;
-     * });
-     *
-     * ```
-     *
-     * @param params - Parameters for request
-     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
-     * @param callback - Optional callback that handles the response.
-     * @returns A promise if used with async/await, or void if used with a callback.
-     */
-    batchUpdate(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate,
-      options: StreamMethodOptions
-    ): Promise<GaxiosResponseWithHTTP2<Readable>>;
-    batchUpdate(
-      params?: Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate,
-      options?: MethodOptions
-    ): Promise<
-      GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-    >;
-    batchUpdate(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate,
-      options: StreamMethodOptions | BodyResponseCallback<Readable>,
-      callback: BodyResponseCallback<Readable>
-    ): void;
-    batchUpdate(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate,
-      options:
-        | MethodOptions
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>,
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-    ): void;
-    batchUpdate(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate,
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-    ): void;
-    batchUpdate(
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-    ): void;
-    batchUpdate(
-      paramsOrCallback?:
-        | Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-        | BodyResponseCallback<Readable>,
-      optionsOrCallback?:
-        | MethodOptions
-        | StreamMethodOptions
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-        | BodyResponseCallback<Readable>,
-      callback?:
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-        | BodyResponseCallback<Readable>
-    ):
-      | void
-      | Promise<
-          GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>
-        >
-      | Promise<GaxiosResponseWithHTTP2<Readable>> {
-      let params = (paramsOrCallback ||
-        {}) as Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate;
-      let options = (optionsOrCallback || {}) as MethodOptions;
-
-      if (typeof paramsOrCallback === 'function') {
-        callback = paramsOrCallback;
-        params =
-          {} as Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate;
-        options = {};
-      }
-
-      if (typeof optionsOrCallback === 'function') {
-        callback = optionsOrCallback;
-        options = {};
-      }
-
-      const rootUrl =
-        options.rootUrl || 'https://discoveryengine.googleapis.com/';
-      const parameters = {
-        options: Object.assign(
-          {
-            url: (
-              rootUrl + '/v1alpha/{+parent}/userAvailabilities:batchUpdate'
-            ).replace(/([^:]\/)\/+/g, '$1'),
-            method: 'POST',
-            apiVersion: '',
-          },
-          options
-        ),
-        params,
-        requiredParams: ['parent'],
-        pathParams: ['parent'],
-        context: this.context,
-      };
-      if (callback) {
-        createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>(
-          parameters,
-          callback as BodyResponseCallback<unknown>
-        );
-      } else {
-        return createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesResponse>(
-          parameters
-        );
-      }
-    }
-
-    /**
-     * Lists the UserAvailabilitys.
-     * @example
-     * ```js
-     * // Before running the sample:
-     * // - Enable the API at:
-     * //   https://console.developers.google.com/apis/api/discoveryengine.googleapis.com
-     * // - Login into gcloud by running:
-     * //   ```sh
-     * //   $ gcloud auth application-default login
-     * //   ```
-     * // - Install the npm module by running:
-     * //   ```sh
-     * //   $ npm install googleapis
-     * //   ```
-     *
-     * const {google} = require('googleapis');
-     * const discoveryengine = google.discoveryengine('v1alpha');
-     *
-     * async function main() {
-     *   const auth = new google.auth.GoogleAuth({
-     *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/discoveryengine.readwrite',
-     *       'https://www.googleapis.com/auth/discoveryengine.serving.readwrite',
-     *     ],
-     *   });
-     *
-     *   // Acquire an auth client, and bind it to all future calls
-     *   const authClient = await auth.getClient();
-     *   google.options({auth: authClient});
-     *
-     *   // Do the magic
-     *   const res =
-     *     await discoveryengine.projects.locations.userStores.userAvailabilities.list(
-     *       {
-     *         // Optional. Filter for the list request. Supported fields (only `user_principal` is supported for now): * `user_principal` (will be normalized for matching) Examples: * `user_principal = "user1@example.com"` to list user availability for `user1@example.com`.
-     *         filter: 'placeholder-value',
-     *         // Optional. Requested page size. Server may return fewer items than requested. If unspecified, defaults to 100. The maximum value is 1000; values above 1000 will be coerced to 1000. If this field is negative, an INVALID_ARGUMENT error is returned.
-     *         pageSize: 'placeholder-value',
-     *         // Optional. A page token, received from a previous `ListUserAvailabilities` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListUserAvailabilities` must match the call that provided the page token.
-     *         pageToken: 'placeholder-value',
-     *         // Required. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     *         parent:
-     *           'projects/my-project/locations/my-location/userStores/my-userStore',
-     *       },
-     *     );
-     *   console.log(res.data);
-     *
-     *   // Example response
-     *   // {
-     *   //   "nextPageToken": "my_nextPageToken",
-     *   //   "userAvailabilities": []
-     *   // }
-     * }
-     *
-     * main().catch(e => {
-     *   console.error(e);
-     *   throw e;
-     * });
-     *
-     * ```
-     *
-     * @param params - Parameters for request
-     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
-     * @param callback - Optional callback that handles the response.
-     * @returns A promise if used with async/await, or void if used with a callback.
-     */
-    list(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$List,
-      options: StreamMethodOptions
-    ): Promise<GaxiosResponseWithHTTP2<Readable>>;
-    list(
-      params?: Params$Resource$Projects$Locations$Userstores$Useravailabilities$List,
-      options?: MethodOptions
-    ): Promise<
-      GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-    >;
-    list(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$List,
-      options: StreamMethodOptions | BodyResponseCallback<Readable>,
-      callback: BodyResponseCallback<Readable>
-    ): void;
-    list(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$List,
-      options:
-        | MethodOptions
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>,
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-    ): void;
-    list(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailabilities$List,
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-    ): void;
-    list(
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-    ): void;
-    list(
-      paramsOrCallback?:
-        | Params$Resource$Projects$Locations$Userstores$Useravailabilities$List
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-        | BodyResponseCallback<Readable>,
-      optionsOrCallback?:
-        | MethodOptions
-        | StreamMethodOptions
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-        | BodyResponseCallback<Readable>,
-      callback?:
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-        | BodyResponseCallback<Readable>
-    ):
-      | void
-      | Promise<
-          GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>
-        >
-      | Promise<GaxiosResponseWithHTTP2<Readable>> {
-      let params = (paramsOrCallback ||
-        {}) as Params$Resource$Projects$Locations$Userstores$Useravailabilities$List;
-      let options = (optionsOrCallback || {}) as MethodOptions;
-
-      if (typeof paramsOrCallback === 'function') {
-        callback = paramsOrCallback;
-        params =
-          {} as Params$Resource$Projects$Locations$Userstores$Useravailabilities$List;
-        options = {};
-      }
-
-      if (typeof optionsOrCallback === 'function') {
-        callback = optionsOrCallback;
-        options = {};
-      }
-
-      const rootUrl =
-        options.rootUrl || 'https://discoveryengine.googleapis.com/';
-      const parameters = {
-        options: Object.assign(
-          {
-            url: (rootUrl + '/v1alpha/{+parent}/userAvailabilities').replace(
-              /([^:]\/)\/+/g,
-              '$1'
-            ),
-            method: 'GET',
-            apiVersion: '',
-          },
-          options
-        ),
-        params,
-        requiredParams: ['parent'],
-        pathParams: ['parent'],
-        context: this.context,
-      };
-      if (callback) {
-        createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>(
-          parameters,
-          callback as BodyResponseCallback<unknown>
-        );
-      } else {
-        return createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaListUserAvailabilitiesResponse>(
-          parameters
-        );
-      }
-    }
-  }
-
-  export interface Params$Resource$Projects$Locations$Userstores$Useravailabilities$Batchupdate extends StandardParameters {
-    /**
-     * Required. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     */
-    parent?: string;
-
-    /**
-     * Request body metadata
-     */
-    requestBody?: Schema$GoogleCloudDiscoveryengineV1alphaBatchUpdateUserAvailabilitiesRequest;
-  }
-  export interface Params$Resource$Projects$Locations$Userstores$Useravailabilities$List extends StandardParameters {
-    /**
-     * Optional. Filter for the list request. Supported fields (only `user_principal` is supported for now): * `user_principal` (will be normalized for matching) Examples: * `user_principal = "user1@example.com"` to list user availability for `user1@example.com`.
-     */
-    filter?: string;
-    /**
-     * Optional. Requested page size. Server may return fewer items than requested. If unspecified, defaults to 100. The maximum value is 1000; values above 1000 will be coerced to 1000. If this field is negative, an INVALID_ARGUMENT error is returned.
-     */
-    pageSize?: number;
-    /**
-     * Optional. A page token, received from a previous `ListUserAvailabilities` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListUserAvailabilities` must match the call that provided the page token.
-     */
-    pageToken?: string;
-    /**
-     * Required. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     */
-    parent?: string;
-  }
-
-  export class Resource$Projects$Locations$Userstores$Useravailability {
-    context: APIRequestContext;
-    constructor(context: APIRequestContext) {
-      this.context = context;
-    }
-
-    /**
-     * Updates a UserAvailability.
-     * @example
-     * ```js
-     * // Before running the sample:
-     * // - Enable the API at:
-     * //   https://console.developers.google.com/apis/api/discoveryengine.googleapis.com
-     * // - Login into gcloud by running:
-     * //   ```sh
-     * //   $ gcloud auth application-default login
-     * //   ```
-     * // - Install the npm module by running:
-     * //   ```sh
-     * //   $ npm install googleapis
-     * //   ```
-     *
-     * const {google} = require('googleapis');
-     * const discoveryengine = google.discoveryengine('v1alpha');
-     *
-     * async function main() {
-     *   const auth = new google.auth.GoogleAuth({
-     *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/discoveryengine.readwrite',
-     *       'https://www.googleapis.com/auth/discoveryengine.serving.readwrite',
-     *     ],
-     *   });
-     *
-     *   // Acquire an auth client, and bind it to all future calls
-     *   const authClient = await auth.getClient();
-     *   google.options({auth: authClient});
-     *
-     *   // Do the magic
-     *   const res =
-     *     await discoveryengine.projects.locations.userStores.userAvailability.update(
-     *       {
-     *         // Optional. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     *         parent:
-     *           'projects/my-project/locations/my-location/userStores/my-userStore',
-     *
-     *         // Request body metadata
-     *         requestBody: {
-     *           // request body parameters
-     *           // {
-     *           //   "parent": "my_parent",
-     *           //   "updateMask": "my_updateMask",
-     *           //   "userAvailability": {}
-     *           // }
-     *         },
-     *       },
-     *     );
-     *   console.log(res.data);
-     *
-     *   // Example response
-     *   // {
-     *   //   "observeTime": "my_observeTime",
-     *   //   "state": "my_state",
-     *   //   "updateTime": "my_updateTime",
-     *   //   "userPrincipal": "my_userPrincipal"
-     *   // }
-     * }
-     *
-     * main().catch(e => {
-     *   console.error(e);
-     *   throw e;
-     * });
-     *
-     * ```
-     *
-     * @param params - Parameters for request
-     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
-     * @param callback - Optional callback that handles the response.
-     * @returns A promise if used with async/await, or void if used with a callback.
-     */
-    update(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailability$Update,
-      options: StreamMethodOptions
-    ): Promise<GaxiosResponseWithHTTP2<Readable>>;
-    update(
-      params?: Params$Resource$Projects$Locations$Userstores$Useravailability$Update,
-      options?: MethodOptions
-    ): Promise<
-      GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-    >;
-    update(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailability$Update,
-      options: StreamMethodOptions | BodyResponseCallback<Readable>,
-      callback: BodyResponseCallback<Readable>
-    ): void;
-    update(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailability$Update,
-      options:
-        | MethodOptions
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>,
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-    ): void;
-    update(
-      params: Params$Resource$Projects$Locations$Userstores$Useravailability$Update,
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-    ): void;
-    update(
-      callback: BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-    ): void;
-    update(
-      paramsOrCallback?:
-        | Params$Resource$Projects$Locations$Userstores$Useravailability$Update
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-        | BodyResponseCallback<Readable>,
-      optionsOrCallback?:
-        | MethodOptions
-        | StreamMethodOptions
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-        | BodyResponseCallback<Readable>,
-      callback?:
-        | BodyResponseCallback<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-        | BodyResponseCallback<Readable>
-    ):
-      | void
-      | Promise<
-          GaxiosResponseWithHTTP2<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>
-        >
-      | Promise<GaxiosResponseWithHTTP2<Readable>> {
-      let params = (paramsOrCallback ||
-        {}) as Params$Resource$Projects$Locations$Userstores$Useravailability$Update;
-      let options = (optionsOrCallback || {}) as MethodOptions;
-
-      if (typeof paramsOrCallback === 'function') {
-        callback = paramsOrCallback;
-        params =
-          {} as Params$Resource$Projects$Locations$Userstores$Useravailability$Update;
-        options = {};
-      }
-
-      if (typeof optionsOrCallback === 'function') {
-        callback = optionsOrCallback;
-        options = {};
-      }
-
-      const rootUrl =
-        options.rootUrl || 'https://discoveryengine.googleapis.com/';
-      const parameters = {
-        options: Object.assign(
-          {
-            url: (
-              rootUrl + '/v1alpha/{+parent}/userAvailability:update'
-            ).replace(/([^:]\/)\/+/g, '$1'),
-            method: 'POST',
-            apiVersion: '',
-          },
-          options
-        ),
-        params,
-        requiredParams: ['parent'],
-        pathParams: ['parent'],
-        context: this.context,
-      };
-      if (callback) {
-        createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>(
-          parameters,
-          callback as BodyResponseCallback<unknown>
-        );
-      } else {
-        return createAPIRequest<Schema$GoogleCloudDiscoveryengineV1alphaUserAvailability>(
-          parameters
-        );
-      }
-    }
-  }
-
-  export interface Params$Resource$Projects$Locations$Userstores$Useravailability$Update extends StandardParameters {
-    /**
-     * Optional. The parent UserStore resource name, format: `projects/{project\}/locations/{location\}/userStores/{user_store_id\}`.
-     */
-    parent?: string;
-
-    /**
-     * Request body metadata
-     */
-    requestBody?: Schema$GoogleCloudDiscoveryengineV1alphaUpdateUserAvailabilityRequest;
   }
 
   export class Resource$Projects$Locations$Userstores$Userlicenses {
