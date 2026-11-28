@@ -2629,6 +2629,19 @@ export namespace networkservices_v1beta1 {
     updateTime?: string | null;
   }
   /**
+   * Specifies how the `ProducerExtension` acts on events. This information is required to parallelize the execution of `ProducerExtension` resources.
+   */
+  export interface Schema$ProducerExtensionExtensionBehavior {
+    /**
+     * Optional. Specifies how the `ProducerExtension` acts on the request body event. This can be used to determine whether the `ProducerExtension` can run in parallel with other extensions in the request direction.
+     */
+    requestBodyAction?: string | null;
+    /**
+     * Optional. Specifies how the `ProducerExtension` acts on the response body event. This can be used to determine whether the `ProducerExtension` can run in parallel with other extensions in the response direction.
+     */
+    responseBodyAction?: string | null;
+  }
+  /**
    * The configuration for the service that this `ProducerExtension` offers.
    */
   export interface Schema$ProducerExtensionExtensionSettings {
@@ -2636,6 +2649,10 @@ export namespace networkservices_v1beta1 {
      * Optional. The `:authority` header in the request sent to the extension service.
      */
     authority?: string | null;
+    /**
+     * Optional. Specifies how the extension is expected to act on events.
+     */
+    extensionBehavior?: Schema$ProducerExtensionExtensionBehavior;
     /**
      * Optional. This field is not supported.
      */
