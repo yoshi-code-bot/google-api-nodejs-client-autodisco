@@ -392,6 +392,19 @@ export namespace deepreview_v1 {
     revisionId?: string | null;
   }
   /**
+   * Estimated wall-clock duration range for a review run.
+   */
+  export interface Schema$DurationRange {
+    /**
+     * Output only. Upper bound of the estimated review duration.
+     */
+    maxDuration?: string | null;
+    /**
+     * Output only. Lower bound of the estimated review duration.
+     */
+    minDuration?: string | null;
+  }
+  /**
    * A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); \}
    */
   export interface Schema$Empty {}
@@ -405,9 +418,21 @@ export namespace deepreview_v1 {
     review?: Schema$Review;
   }
   /**
-   * Response message for estimating what a review would cost. When the cost can't be estimated, for example because too few past reviews used the same model, depth, and thinking level, the costs are unset and `past_review_count` is 0.
+   * Response message for estimating what a review would cost and how long it will take on the caller's Gemini API key. Structural guidance fields (`document_token_count`, `estimated_model_calls`, `paid_tier1_estimated_duration`, `paid_tier2_plus_estimated_duration`, and `explicit_caching_supported`) are populated whenever the document can be measured and PAT is configured, even when too few past reviews exist (or the model has no listed price) to compute USD cost percentiles. When USD cost can't be estimated, `low_cost`, `median_cost`, and `high_cost` are unset and `past_review_count` is 0.
    */
   export interface Schema$EstimateReviewCostResponse {
+    /**
+     * Output only. Estimated size of the document in tokens (matching the stored `Document.estimated_tokens` used by submission gates when available).
+     */
+    documentTokenCount?: string | null;
+    /**
+     * Output only. Planned PAT workflow topology model call budget for the configured depth and enabled modules (including dynamic prompt-writer calls when enabled and 3 progress slots for citation checking; actual citation verification runs additional per-reference lookups).
+     */
+    estimatedModelCalls?: number | null;
+    /**
+     * Output only. Whether explicit context caching applies on Paid Tier Gemini API keys for the configured model and document size, and is reflected in the cost estimate (false when post-launch BYOK analytics show explicit caching is falling back inline; Free-Tier keys do not create explicit caches).
+     */
+    explicitCachingSupported?: boolean | null;
     /**
      * The 95th percentile of what comparable past reviews would cost for this document.
      */
@@ -420,6 +445,14 @@ export namespace deepreview_v1 {
      * The median of what comparable past reviews would cost for this document.
      */
     medianCost?: Schema$Money;
+    /**
+     * Output only. Estimated wall-clock turnaround range on a Paid Tier 1 Gemini API key (bounded by Paid Tier 1's 1M-2M tokens/min ceilings and retry/spend throttle backoff; single-attempt worker runs cap at 55 minutes until multi-slice continuations are enabled).
+     */
+    paidTier1EstimatedDuration?: Schema$DurationRange;
+    /**
+     * Output only. Estimated wall-clock turnaround range on a Paid Tier 2 or Paid Tier 3 Gemini API key (unconstrained up to worker concurrency).
+     */
+    paidTier2PlusEstimatedDuration?: Schema$DurationRange;
     /**
      * Number of past reviews the estimate is based on.
      */
@@ -692,9 +725,13 @@ export namespace deepreview_v1 {
     suffix?: string | null;
   }
   /**
-   * Singleton resource representing the authenticated caller's review quota limits and sliding-window usage.
+   * Singleton resource representing the authenticated caller's review quota limits, sliding-window usage, and non-expiring bonus credits.
    */
   export interface Schema$UserQuota {
+    /**
+     * Output only. Remaining non-expiring bonus free-tier review credits. Bonus credits are consumed only after the rolling 7-day weekly allowance is exhausted and are included in `remaining_review_count`.
+     */
+    bonusReviewCount?: number | null;
     /**
      * Output only. Whether a custom per-user quota override is active for this user.
      */
@@ -712,7 +749,7 @@ export namespace deepreview_v1 {
      */
     nextAvailableTime?: string | null;
     /**
-     * Output only. Remaining free-tier reviews available in the current rolling 7-day window (`max(0, max_review_count_per_week - used_review_count)`).
+     * Output only. Total remaining free-tier reviews currently available, combining the remaining rolling 7-day weekly allowance and any non-expiring bonus credits (`max(0, max_review_count_per_week - used_review_count) + bonus_review_count`).
      */
     remainingReviewCount?: number | null;
     /**
@@ -751,10 +788,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -867,7 +901,7 @@ export namespace deepreview_v1 {
     }
 
     /**
-     * Estimates what a review of a document would cost on the caller's Gemini API key. The estimate comes from what past reviews with the same model, depth, and thinking level cost, adjusted to this document's size and repriced at the Gemini API's current list prices. It covers one review attempt that runs to completion, and doesn't include retries after errors.
+     * Estimates what a review of a document would cost and how long it will take on the caller's Gemini API key. The USD cost range comes from what comparable past reviews with the same model, depth, and thinking level cost, adjusted to this document's size, repriced at the Gemini API's current list prices, and including explicit context cache creation and storage fees when supported. It covers one review run to completion and doesn't include retries after errors. Structural guidance (document token count, estimated model calls, explicit context caching support, and tier-split turnaround durations) is populated whenever the document can be measured, even when too few comparable past reviews exist to compute USD cost percentiles.
      * @example
      * ```js
      * // Before running the sample:
@@ -888,10 +922,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -915,9 +946,14 @@ export namespace deepreview_v1 {
      *
      *   // Example response
      *   // {
+     *   //   "documentTokenCount": "my_documentTokenCount",
+     *   //   "estimatedModelCalls": 0,
+     *   //   "explicitCachingSupported": false,
      *   //   "highCost": {},
      *   //   "lowCost": {},
      *   //   "medianCost": {},
+     *   //   "paidTier1EstimatedDuration": {},
+     *   //   "paidTier2PlusEstimatedDuration": {},
      *   //   "pastReviewCount": 0
      *   // }
      * }
@@ -1042,10 +1078,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -1181,10 +1214,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -1382,10 +1412,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -1544,10 +1571,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -1687,10 +1711,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -1891,10 +1912,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -2031,10 +2049,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -2254,10 +2269,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -2408,10 +2420,7 @@ export namespace deepreview_v1 {
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
      *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/cloud-platform',
-     *       'https://www.googleapis.com/auth/drive.file',
-     *     ],
+     *     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
      *   });
      *
      *   // Acquire an auth client, and bind it to all future calls
@@ -2427,6 +2436,7 @@ export namespace deepreview_v1 {
      *
      *   // Example response
      *   // {
+     *   //   "bonusReviewCount": 0,
      *   //   "customLimitEnabled": false,
      *   //   "maxReviewCountPerWeek": 0,
      *   //   "name": "my_name",
