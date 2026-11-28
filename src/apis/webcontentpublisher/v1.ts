@@ -2260,6 +2260,8 @@ export namespace webcontentpublisher_v1 {
      *
      *   // Do the magic
      *   const res = await webcontentpublisher.publications.checkProgramAccess({
+     *     // Required. The canonical `https://` URL of the article being accessed, matching the `` element on the rendered page. When calling the REST `GET` endpoint directly without a client library, callers must percent-encode the `canonicalUrl` query parameter; the service URL-decodes it automatically.
+     *     canonicalUrl: 'placeholder-value',
      *     // Required. The resource name of the publication. Format: publications/{publication\}
      *     name: 'publications/my-publication',
      *     // Required. The specific product ID being accessed.
@@ -2390,6 +2392,10 @@ export namespace webcontentpublisher_v1 {
     uri?: string;
   }
   export interface Params$Resource$Publications$Checkprogramaccess extends StandardParameters {
+    /**
+     * Required. The canonical `https://` URL of the article being accessed, matching the `` element on the rendered page. When calling the REST `GET` endpoint directly without a client library, callers must percent-encode the `canonicalUrl` query parameter; the service URL-decodes it automatically.
+     */
+    canonicalUrl?: string;
     /**
      * Required. The resource name of the publication. Format: publications/{publication\}
      */
