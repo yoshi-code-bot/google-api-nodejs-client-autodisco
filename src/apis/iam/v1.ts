@@ -1547,7 +1547,7 @@ export namespace iam_v1 {
      */
     attributeMapping?: {[key: string]: string} | null;
     /**
-     * Optional. An interval that determines how often user attributes are synced from the IdP. Must be between 30 minutes (1800s) and 12 hours (43200s). This configuration is used only when the Google Cloud session length policy is configured. When Google Cloud session length policy is configured and `attribute_sync_interval` is not configured, attributes are synced after a default interval of 12 hours (43200 seconds).
+     * Optional. An interval that determines how often user attributes are synced from the IdP. Must be between 30 minutes (1800s) and 12 hours (43200s). This configuration is used only when the Google Cloud session length policy is configured. When Google Cloud session length policy is configured and `attribute_sync_interval` is not configured, attributes are synced after a default interval of 30 minutes (1800s).
      */
     attributeSyncInterval?: string | null;
     /**
