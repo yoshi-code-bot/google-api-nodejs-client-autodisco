@@ -917,6 +917,19 @@ export namespace hypercomputecluster_v1 {
     slurm?: Schema$SlurmOrchestrator;
   }
   /**
+   * Service account email and scopes
+   */
+  export interface Schema$ServiceAccount {
+    /**
+     * Optional. Service account email
+     */
+    email?: string | null;
+    /**
+     * Optional. Service account scopes
+     */
+    scopes?: string[] | null;
+  }
+  /**
    * Configuration for Slurm [login nodes](https://slurm.schedmd.com/quickstart_admin.html#login) in the cluster. Login nodes are Compute Engine VM instances that allow users to access the cluster over SSH.
    */
   export interface Schema$SlurmLoginNodes {
@@ -948,6 +961,10 @@ export namespace hypercomputecluster_v1 {
      * Required. Name of the Compute Engine [machine type](https://cloud.google.com/compute/docs/machine-resource) to use for login nodes, e.g. `n2-standard-2`.
      */
     machineType?: string | null;
+    /**
+     * Optional. Service account to be used by login node instances.
+     */
+    serviceAccount?: Schema$ServiceAccount;
     /**
      * Optional. [Startup script](https://cloud.google.com/compute/docs/instances/startup-scripts/linux) to be run on each login node instance. Max 256KB. The script must complete within the system-defined default timeout of 5 minutes. For tasks that require more time, consider running them in the background using methods such as `&` or `nohup`.
      */
@@ -981,6 +998,10 @@ export namespace hypercomputecluster_v1 {
      * Optional. Controls how many additional nodes a cluster can bring online to handle workloads. Set this value to enable dynamic node creation and limit the number of additional nodes the cluster can bring online. Leave empty if you do not want the cluster to create nodes dynamically, and instead rely only on static nodes.
      */
     maxDynamicNodeCount?: string | null;
+    /**
+     * Optional. Immutable. Service account to be used by instances in the nodeset.
+     */
+    serviceAccount?: Schema$ServiceAccount;
     /**
      * Optional. Number of nodes to be statically created for this nodeset. The cluster will attempt to ensure that at least this many nodes exist at all times.
      */
